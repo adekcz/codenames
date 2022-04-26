@@ -2,7 +2,8 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-const size = 5;
+const size = 3;
+const wordCount= size*size;
 
 function Tile(props) {
     return (
@@ -42,6 +43,50 @@ class Board extends React.Component {
     }
 }
 
+class Textareademo extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            textAreaValue: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(event) {
+        let currentValue = event.target.value;
+        let lines = (currentValue.match(/\b/g) || '').length / 2;
+        if (lines > wordCount) {
+            return;
+        }
+        this.setState(
+            {
+                textAreaValue: currentValue
+            }
+        );
+        if (lines < wordCount) {
+            this.setState({status: "you need " + (wordCount-lines) + " more lines"})
+        }
+        if (lines === wordCount) {
+            this.setState({status: "Good job. Words set up! "})
+        }
+    }
+
+    render() {
+        return (
+            <div>
+            <label>Enter value : </label>
+            <span>{this.state.status}</span>
+            <textarea
+                value={this.state.textAreaValue}
+                onChange={this.handleChange}
+                rows={wordCount}
+                cols={15}
+            />
+            </div>
+        );
+    }
+}
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -56,8 +101,11 @@ class App extends React.Component {
 
     render() {
         return (
+            <div>
             <Board tiles={this.tiles}
             />
+            <Textareademo />
+            </div>
         );
     }
 }
