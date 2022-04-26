@@ -19,7 +19,7 @@ class Board extends React.Component {
     renderTile(row, col) {
         return <Tile
         key={row + " " + col}
-        value={this.props.tiles[row][col]} 
+        value={this.props.tiles[row][col].text + "\n" + this.props.tiles[row][col].tileType} 
         onClick={() => this.props.onClick(row, col)}
             />;
     }
@@ -62,6 +62,18 @@ class Textareademo extends React.Component {
             const newArr = [];
             let arr = currentValue.split(/\b/g);
             arr = arr.filter(word => word.trim() !== "");
+            for(let row = 0; row<size; row++) {
+                for(let col = 0; col<size; col++)
+                {
+                    let index = row*size + col;
+                    if(arr.length> index) {
+                        arr[index] = {text: arr[index], tileType: this.props.tiles[row][col].tileType}
+                    } else {
+                        arr[index] = this.props.tiles[row][col];
+                    }
+                }
+            }
+
             while(arr.length) newArr.push(arr.splice(0,size));
             this.props.setTiles(newArr);
         this.setState(
@@ -100,18 +112,25 @@ function createInitArray() {
     }
     for(let i = 0; i<size;i++)
         for(let j = 0; j<size;j++)
-            tilesPreparation[i][j] = i+","+j;
+            tilesPreparation[i][j] = {
+                text: i+","+j,
+                tileType: "grey"
+            };
     return tilesPreparation;
 
 }
+
+function initGameMap(size) {
+}
 let App = () => {
     let [tiles, setTiles] = useState(createInitArray());
+    let [gameMap, setGameMap] = useState(initGameMap(size*size));
 
     return (
             <div>
             <Board tiles={tiles}
             />
-            <Textareademo setTiles={ (value) => setTiles(value) }    />
+            <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
             </div>
     );
 }
