@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -18,6 +18,7 @@ class Board extends React.Component {
 
     renderTile(row, col) {
         return <Tile
+        key={row + " " + col}
         value={this.props.tiles[row][col]} 
         onClick={() => this.props.onClick(row, col)}
             />;
@@ -28,7 +29,7 @@ class Board extends React.Component {
             <div>
             { this.props.tiles.map(
                 (row, rowId) => 
-                    (<div className="board-row">
+                    (<div className="board-row" key={rowId}>
                         {
                             row.map((col, colId) => 
                                 this.renderTile(rowId, colId)
@@ -58,6 +59,11 @@ class Textareademo extends React.Component {
         if (lines > wordCount) {
             return;
         }
+            const newArr = [];
+            let arr = currentValue.split(/\b/g);
+            arr = arr.filter(word => word.trim() !== "");
+            while(arr.length) newArr.push(arr.splice(0,size));
+            this.props.setTiles(newArr);
         this.setState(
             {
                 textAreaValue: currentValue
@@ -67,7 +73,7 @@ class Textareademo extends React.Component {
             this.setState({status: "you need " + (wordCount-lines) + " more lines"})
         }
         if (lines === wordCount) {
-            this.setState({status: "Good job. Words set up! "})
+            this.setState({status: "Good job. Words set up! (you now cannot add new words, you can edit though)"})
         }
     }
 
@@ -87,27 +93,27 @@ class Textareademo extends React.Component {
     }
 }
 
-class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.tiles = Array(size).fill(null);
-        for (let row = 0; row<size; row++) {
-            this.tiles[row] = Array(size).fill(null);
-        }
-        for(let i = 0; i<size;i++)
-            for(let j = 0; j<size;j++)
-                this.tiles[i][j] = i+","+j;
+function createInitArray() {
+    let tilesPreparation = Array(size).fill(null);
+    for (let row = 0; row<size; row++) {
+        tilesPreparation[row] = Array(size).fill(null);
     }
+    for(let i = 0; i<size;i++)
+        for(let j = 0; j<size;j++)
+            tilesPreparation[i][j] = i+","+j;
+    return tilesPreparation;
 
-    render() {
-        return (
+}
+let App = () => {
+    let [tiles, setTiles] = useState(createInitArray());
+
+    return (
             <div>
-            <Board tiles={this.tiles}
+            <Board tiles={tiles}
             />
-            <Textareademo />
+            <Textareademo setTiles={ (value) => setTiles(value) }    />
             </div>
-        );
-    }
+    );
 }
 
 export default App;
