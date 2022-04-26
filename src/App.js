@@ -67,9 +67,9 @@ class Textareademo extends React.Component {
                 {
                     let index = row*size + col;
                     if(arr.length> index) {
-                        arr[index] = {text: arr[index], tileType: this.props.tiles[row][col].tileType}
+                        arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
                     } else {
-                        arr[index] = this.props.tiles[row][col];
+                        arr[index] = {text: "default", tileType:"grey"};
                     }
                 }
             }
