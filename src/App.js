@@ -19,7 +19,7 @@ class Board extends React.Component {
     renderTile(row, col) {
         return <Tile
         key={row + " " + col}
-        value={this.props.tiles[row][col].text + "\n" + this.props.tiles[row][col].tileType} 
+        value={this.props.tiles[row][col].text + ": " + this.props.tiles[row][col].tileType} 
         onClick={() => this.props.onClick(row, col)}
             />;
     }
@@ -69,7 +69,7 @@ class Textareademo extends React.Component {
                     if(arr.length> index) {
                         arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
                     } else {
-                        arr[index] = {text: "default", tileType:"grey"};
+                        arr[index] = {text: "", tileType: this.props.tiles[row][col].tileType};
                     }
                 }
             }
@@ -107,11 +107,17 @@ class Textareademo extends React.Component {
     }
 }
 
-function createInitArray() {
-    let tilesPreparation = Array(size).fill(null);
-    for (let row = 0; row<size; row++) {
-        tilesPreparation[row] = Array(size).fill(null);
+function create2dArray(rows, cols) {
+    let array = Array(rows).fill(null);
+    for (let row = 0; row<rows; row++) {
+        array[row] = Array(cols).fill(null);
     }
+    return array;
+
+}
+function createInitArray() {
+    let tilesPreparation = create2dArray(size, size);
+    /* following can be deleted after prototyping ends*/
     for(let i = 0; i<size;i++)
         for(let j = 0; j<size;j++)
             tilesPreparation[i][j] = {
@@ -119,14 +125,42 @@ function createInitArray() {
                 tileType: "grey"
             };
     return tilesPreparation;
-
 }
 
-function initGameMap(size) {
+function createGameMap(size) {
+    let gameMap = create2dArray(size, size);
+
+    let redCount = parseInt(size*size * 0.36);
+    let blueCount = redCount - 1;
+    let blackCount = 1;
+
+    let colorsCount = [redCount, blueCount, blackCount];
+    for (let colorIndex = 0; colorIndex<colorsCount.length; colorIndex++) {
+        let currentCount = 0;
+        while (currentCount < colorsCount[colorIndex]) {
+            let row=parseInt(Math.random()*size);
+            let col=parseInt(Math.random()*size);
+            if(gameMap[row][col] === null) {
+                gameMap[row][col] = colorIndex;
+                currentCount++;
+            }
+        }
+    }
+    for(let i = 0; i<size;i++) {
+            console.log( gameMap[i]);
+    }
+    return gameMap;
 }
+
 let App = () => {
-    let [tiles, setTiles] = useState(createInitArray());
-    let [gameMap, setGameMap] = useState(initGameMap(size*size));
+    let tempTiles = createInitArray();
+    let gameMap = createGameMap(size);
+    for(let row = 0; row < size; row++){
+        for(let col = 0; col < size; col++){
+            tempTiles[row][col].tileType = gameMap[row][col];
+        }
+    }
+    let [tiles, setTiles] = useState(tempTiles);
 
     return (
             <div>
