@@ -93,7 +93,9 @@ class Textareademo extends React.Component {
         return (
             <div>
             <label>Enter value : </label>
+            <br />
             <span>{this.state.status}</span>
+            <br />
             <textarea
                 value={this.state.textAreaValue}
                 onChange={this.handleChange}
