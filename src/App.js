@@ -146,29 +146,71 @@ function createGameMap(size) {
             }
         }
     }
-    for(let i = 0; i<size;i++) {
-            console.log( gameMap[i]);
-    }
     return gameMap;
+}
+
+function initGameMap(tiles){
+    console.log("INIT");
+    console.log(tiles.length);
+    let gameMap = createGameMap(size);
+    for(let row = 0; row < size; row++){
+        for(let col = 0; col < size; col++){
+            gameMap[row][col] = {tileType: gameMap[row][col]};
+            gameMap[row][col].text = tiles[row][col].text;
+        }
+    }
+    printArray(tiles, "end of initGameMap");
+    return gameMap;
+}
+
+function printArray(arr, reason = ""){
+    if(reason !== ""){
+        console.log(reason);
+    }
+    for(let row = 0; row < arr.length; row++) {
+        let acc = "";
+        for(let col = 0; col < arr.length; col++) {
+            acc += arr[row][col].text +":" + arr[row][col].tileType + " ";
+        }
+        console.log(acc);
+    }
 }
 
 let App = () => {
     let tempTiles = createInitArray();
-    let gameMap = createGameMap(size);
-    for(let row = 0; row < size; row++){
-        for(let col = 0; col < size; col++){
-            tempTiles[row][col].tileType = gameMap[row][col];
-        }
-    }
+    tempTiles = initGameMap(tempTiles);
     let [tiles, setTiles] = useState(tempTiles);
+    printArray(tiles, "redrawing in app");
 
     return (
             <div>
             <Board tiles={tiles}
             />
+            <button  onClick={() => setTiles(initGameMap(tiles))}>
+                redraw map
+            </button>
+            <button  onClick={() => printArray(tiles, "on print tiles")}>
+                print tiles
+            </button>
             <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        <Example />
             </div>
     );
+}
+
+function Example() {
+  // Declare a new state variable, which we'll call "count"  const [count, setCount] = useState(0);
+      const [count, setCount] = useState(0);
+    console.log(count);
+    
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
 }
 
 export default App;
