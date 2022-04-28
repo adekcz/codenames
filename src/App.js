@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -8,8 +8,8 @@ const wordCount= size*size;
 function Tile(props) {
     return (
         <button 
-        className={"tile "+props.tileType} 
-        >
+        className={"tile "+props.currentColors[props.x][props.y]} 
+        onClick={(e) => props.changeColor(props.x,props.y,props.tileType) }>
         {props.text}
         </button>
     );
@@ -18,12 +18,16 @@ function Tile(props) {
 
 class Board extends React.Component {
 
-    renderTile(row, col) {
+    renderTile(row, col, changeColor, currentColors) {
         return <Tile
         key={row + " " + col}
+        x={row}
+        y={col}
+        currentColors={currentColors}
         text={this.props.tiles[row][col].text} 
         tileType={this.props.tiles[row][col].tileType} 
         onClick={this.props.onClick}
+        changeColor={changeColor}
             />;
     }
 
@@ -35,7 +39,7 @@ class Board extends React.Component {
                     (<div className="board-row" key={rowId}>
                         {
                             row.map((col, colId) => 
-                                this.renderTile(rowId, colId)
+                                this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
                             )
                         }
                     </div>
@@ -180,17 +184,33 @@ function printArray(arr, reason = ""){
     }
 }
 
+function iHateThis(oldArray) {  
+    return JSON.parse(JSON.stringify(oldArray));
+}
+
 let App = () => {
     let tempTiles = createInitArray();
     tempTiles = initGameMap(tempTiles);
     let [tiles, setTiles] = useState(tempTiles);
+    let [currentColors, setCurrentColors] = useState(create2dArray(size,size));
+    function changeColor(x,y,color){
+        let copy = iHateThis(currentColors);
+        copy[x][y] = color;
+        setCurrentColors(copy);
+    }
     printArray(tiles, "redrawing in app");
 
     return (
             <div>
             <Board tiles={tiles}
+            currentColors={currentColors}
+            changeColor={changeColor}
             />
-            <button  onClick={() => setTiles(initGameMap(tiles))}>
+            <button  onClick={() => {
+                setTiles(initGameMap(tiles));
+                setCurrentColors(create2dArray(size,size));
+            }
+            }>
                 redraw map
             </button>
             <button  onClick={() => printArray(tiles, "on print tiles")}>
