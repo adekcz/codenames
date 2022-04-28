@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-const size = 3;
+const size = 5;
 const wordCount= size*size;
 
 function Tile(props) {
     return (
-        <button className="tile" onClick={props.onClick}>
-        {props.value}
+        <button 
+        className={"tile "+props.tileType} 
+        >
+        {props.text}
         </button>
     );
 
@@ -19,8 +21,9 @@ class Board extends React.Component {
     renderTile(row, col) {
         return <Tile
         key={row + " " + col}
-        value={this.props.tiles[row][col].text + ": " + this.props.tiles[row][col].tileType} 
-        onClick={() => this.props.onClick(row, col)}
+        text={this.props.tiles[row][col].text} 
+        tileType={this.props.tiles[row][col].tileType} 
+        onClick={this.props.onClick}
             />;
     }
 
@@ -107,10 +110,10 @@ class Textareademo extends React.Component {
     }
 }
 
-function create2dArray(rows, cols) {
+function create2dArray(rows, cols, def=null) {
     let array = Array(rows).fill(null);
     for (let row = 0; row<rows; row++) {
-        array[row] = Array(cols).fill(null);
+        array[row] = Array(cols).fill(def);
     }
     return array;
 
@@ -128,7 +131,8 @@ function createInitArray() {
 }
 
 function createGameMap(size) {
-    let gameMap = create2dArray(size, size);
+    let colorMap = {0:"red", 1:"blue", 2:"dark"}
+    let gameMap = create2dArray(size, size, "grey");
 
     let redCount = parseInt(size*size * 0.36);
     let blueCount = redCount - 1;
@@ -140,8 +144,8 @@ function createGameMap(size) {
         while (currentCount < colorsCount[colorIndex]) {
             let row=parseInt(Math.random()*size);
             let col=parseInt(Math.random()*size);
-            if(gameMap[row][col] === null) {
-                gameMap[row][col] = colorIndex;
+            if(gameMap[row][col] === "grey") {
+                gameMap[row][col] = colorMap[colorIndex];
                 currentCount++;
             }
         }
@@ -193,24 +197,8 @@ let App = () => {
                 print tiles
             </button>
             <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
-        <Example />
             </div>
     );
-}
-
-function Example() {
-  // Declare a new state variable, which we'll call "count"  const [count, setCount] = useState(0);
-      const [count, setCount] = useState(0);
-    console.log(count);
-    
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
 }
 
 export default App;

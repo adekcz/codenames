@@ -18,8 +18,8 @@ ol, ul {
 }
 
 .tile {
-  background: #fff;
   border: 1px solid #999;
+  background: #fff;
   float: left;
   font-size: 24px;
   font-weight: bold;
@@ -31,6 +31,20 @@ ol, ul {
   height: 140px;
   width: 140px;
 }
+
+.red {
+  background: red;
+}
+.blue {
+  background: blue;
+}
+.dark {
+  background: lime;
+}
+.grey {
+  background: grey;
+}
+
 
 .tile:focus {
   outline: none;
