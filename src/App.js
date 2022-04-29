@@ -117,7 +117,14 @@ class Textareademo extends React.Component {
 function create2dArray(rows, cols, def=null) {
     let array = Array(rows).fill(null);
     for (let row = 0; row<rows; row++) {
-        array[row] = Array(cols).fill(def);
+        if(typeof def === 'object'){
+            array[row] = [];
+            for(let i = 0; i<cols; i++){
+                array[row][i] = {...def};
+            }
+        } else {
+            array[row] = Array(cols).fill(def);
+        }
     }
     return array;
 
@@ -269,7 +276,9 @@ let App = () => {
         currentColors={currentColors}
         changeColor={changeColor}
         />
+        <div>
         <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        </div>
         </div>
         <button  onClick={() => {
             setTiles(initGameMap(tiles));
@@ -279,9 +288,6 @@ let App = () => {
         redraw map
         </button>
         <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
-        <button  onClick={() => printArray(tiles, "on print tiles")}>
-        print tiles
-        </button>
         <label>
         Name:
         <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />
