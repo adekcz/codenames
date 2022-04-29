@@ -128,15 +128,14 @@ function createInitArray() {
     for(let i = 0; i<size;i++)
         for(let j = 0; j<size;j++)
             tilesPreparation[i][j] = {
-                text: i+","+j,
-                tileType: "grey"
+                text: i+","+j
             };
     return tilesPreparation;
 }
 
 function createGameMap(size) {
-    let colorMap = {0:"red", 1:"blue", 2:"dark"}
-    let gameMap = create2dArray(size, size, "grey");
+    let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
+    let gameMap = create2dArray(size, size, {tileType: "grey", colorCode:3} );
 
     let redCount = parseInt(size*size * 0.36);
     let blueCount = redCount - 1;
@@ -148,8 +147,9 @@ function createGameMap(size) {
         while (currentCount < colorsCount[colorIndex]) {
             let row=parseInt(Math.random()*size);
             let col=parseInt(Math.random()*size);
-            if(gameMap[row][col] === "grey") {
-                gameMap[row][col] = colorMap[colorIndex];
+            if(gameMap[row][col].tileType === "grey") {
+                gameMap[row][col] = {tileType: colorMap[colorIndex]};
+                gameMap[row][col].colorCode = colorIndex;
                 currentCount++;
             }
         }
@@ -163,7 +163,6 @@ function initGameMap(tiles){
     let gameMap = createGameMap(size);
     for(let row = 0; row < size; row++){
         for(let col = 0; col < size; col++){
-            gameMap[row][col] = {tileType: gameMap[row][col]};
             gameMap[row][col].text = tiles[row][col].text;
         }
     }
@@ -186,6 +185,18 @@ function printArray(arr, reason = ""){
 
 function iHateThis(oldArray) {  
     return JSON.parse(JSON.stringify(oldArray));
+}
+
+function getGamePlanCode(plan){
+    let code="0012011"
+    for(let i=0;i<plan.length;i++){
+        for(let j=0;j<plan[i].length;j++){
+            code+=plan[j][i].tileType;
+        }
+    }
+    return code;
+
+
 }
 
 let App = () => {
@@ -213,6 +224,7 @@ let App = () => {
             }>
                 redraw map
             </button>
+            <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
             <button  onClick={() => printArray(tiles, "on print tiles")}>
                 print tiles
             </button>
