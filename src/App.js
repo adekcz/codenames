@@ -225,11 +225,39 @@ let App = () => {
             }
     }
     let [currentColors, setCurrentColors] = useState(tempColors);
+    let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
     function changeColor(x,y,color){
         let copy = iHateThis(currentColors);
         copy[x][y] = color;
         setCurrentColors(copy);
+    }
+
+    function handleChangeColors(event){
+        setLabelForSetGameMapInput("processing");
+        let value = event.target.value;  
+        if(value.length !== size*size + 2*obfus.length) {
+            setLabelForSetGameMapInput("invalid length");
+            return;
+        }
+        let result = create2dArray(size,size);
+        let resultTiles = create2dArray(size,size);
+
+        let decodedPlan=value.substring(obfus.length, value.length-obfus.length);
+            for(let row = 0; row<size; row++) {
+                for(let col = 0; col<size; col++) {
+                    resultTiles[row][col] = {...tiles[row][col]};
+                    resultTiles[row][col].colorCode = decodedPlan[row*size+col];
+                    resultTiles[row][col].tileType   = colorMap[decodedPlan[row*size+col]];
+                }
+            }
+        setTiles(resultTiles);
+        setCurrentColors(result);
+        if(labelForSetGameMapInput === "change was succesful"){
+            setLabelForSetGameMapInput("new map was loaded");
+        } else {
+            setLabelForSetGameMapInput("change was succesful");
+        }
     }
 
     printArray(tiles, "redrawing in app");
@@ -252,6 +280,10 @@ let App = () => {
                 print tiles
             </button>
             <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+            <label>
+              Name:
+              <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />
+            </label>
             </div>
     );
 }
