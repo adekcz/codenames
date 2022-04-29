@@ -187,16 +187,15 @@ function iHateThis(oldArray) {
     return JSON.parse(JSON.stringify(oldArray));
 }
 
+const obfus = "0012320";
 function getGamePlanCode(plan){
-    let code="0012011"
+    let code="";
     for(let i=0;i<plan.length;i++){
         for(let j=0;j<plan[i].length;j++){
-            code+=plan[j][i].tileType;
+            code+=plan[i][j].colorCode;
         }
     }
-    return code;
-
-
+    return obfus+code+obfus;
 }
 
 let App = () => {
