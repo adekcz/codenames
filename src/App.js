@@ -264,10 +264,13 @@ let App = () => {
 
     return (
         <div>
+        <div className='rowC'>
         <Board tiles={tiles}
         currentColors={currentColors}
         changeColor={changeColor}
         />
+        <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        </div>
         <button  onClick={() => {
             setTiles(initGameMap(tiles));
             setCurrentColors(create2dArray(size,size));
@@ -279,7 +282,6 @@ let App = () => {
         <button  onClick={() => printArray(tiles, "on print tiles")}>
         print tiles
         </button>
-        <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
         <label>
         Name:
         <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />

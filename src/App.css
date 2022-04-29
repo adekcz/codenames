@@ -45,6 +45,14 @@ ol, ul {
   background: grey;
 }
 
+textarea {
+    margin: 20px;
+
+}
+.rowC{
+    display:flex; flex-direction:row;
+}
+
 
 .tile:focus {
   outline: none;
