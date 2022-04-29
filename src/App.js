@@ -36,18 +36,18 @@ class Board extends React.Component {
             <div>
             { this.props.tiles.map(
                 (row, rowId) => 
-                    (<div className="board-row" key={rowId}>
-                        {
-                            row.map((col, colId) => 
-                                this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
-                            )
-                        }
-                    </div>
+                (<div className="board-row" key={rowId}>
+                    {
+                        row.map((col, colId) => 
+                        this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
                     )
+                    }
+                    </div>
                 )
+            )
             }
             </div>
-        )
+    )
     }
 }
 
@@ -66,23 +66,23 @@ class Textareademo extends React.Component {
         if (lines > wordCount) {
             return;
         }
-            const newArr = [];
-            let arr = currentValue.split(/\b/g);
-            arr = arr.filter(word => word.trim() !== "");
-            for(let row = 0; row<size; row++) {
-                for(let col = 0; col<size; col++)
-                {
-                    let index = row*size + col;
-                    if(arr.length> index) {
-                        arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
-                    } else {
-                        arr[index] = {text: "", tileType: this.props.tiles[row][col].tileType};
-                    }
+        const newArr = [];
+        let arr = currentValue.split(/\b/g);
+        arr = arr.filter(word => word.trim() !== "");
+        for(let row = 0; row<size; row++) {
+            for(let col = 0; col<size; col++)
+            {
+                let index = row*size + col;
+                if(arr.length> index) {
+                    arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
+                } else {
+                    arr[index] = {text: "", tileType: this.props.tiles[row][col].tileType};
                 }
             }
+        }
 
-            while(arr.length) newArr.push(arr.splice(0,size));
-            this.props.setTiles(newArr);
+        while(arr.length) newArr.push(arr.splice(0,size));
+        this.props.setTiles(newArr);
         this.setState(
             {
                 textAreaValue: currentValue
@@ -104,10 +104,10 @@ class Textareademo extends React.Component {
             <span>{this.state.status}</span>
             <br />
             <textarea
-                value={this.state.textAreaValue}
-                onChange={this.handleChange}
-                rows={wordCount}
-                cols={15}
+            value={this.state.textAreaValue}
+            onChange={this.handleChange}
+            rows={wordCount}
+            cols={15}
             />
             </div>
         );
@@ -200,7 +200,7 @@ function getGamePlanCode(plan){
 
 function useQueryParams() {
     const params = new URLSearchParams(
-      window ? window.location.search : {}
+        window ? window.location.search : {}
     );
 
     return new Proxy(params, {
@@ -219,10 +219,10 @@ let App = () => {
     const { gameplan, ...unknown } = useQueryParams();
     if(gameplan!==null){
         let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
-            for(let row = 0; row<size; row++) {
-                for(let col = 0; col<size; col++)
-                    tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
-            }
+        for(let row = 0; row<size; row++) {
+            for(let col = 0; col<size; col++)
+                tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
+        }
     }
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
@@ -244,13 +244,13 @@ let App = () => {
         let resultTiles = create2dArray(size,size);
 
         let decodedPlan=value.substring(obfus.length, value.length-obfus.length);
-            for(let row = 0; row<size; row++) {
-                for(let col = 0; col<size; col++) {
-                    resultTiles[row][col] = {...tiles[row][col]};
-                    resultTiles[row][col].colorCode = decodedPlan[row*size+col];
-                    resultTiles[row][col].tileType   = colorMap[decodedPlan[row*size+col]];
-                }
+        for(let row = 0; row<size; row++) {
+            for(let col = 0; col<size; col++) {
+                resultTiles[row][col] = {...tiles[row][col]};
+                resultTiles[row][col].colorCode = decodedPlan[row*size+col];
+                resultTiles[row][col].tileType   = colorMap[decodedPlan[row*size+col]];
             }
+        }
         setTiles(resultTiles);
         setCurrentColors(result);
         if(labelForSetGameMapInput === "change was succesful"){
@@ -263,28 +263,28 @@ let App = () => {
     printArray(tiles, "redrawing in app");
 
     return (
-            <div>
-            <Board tiles={tiles}
-            currentColors={currentColors}
-            changeColor={changeColor}
-            />
-            <button  onClick={() => {
-                setTiles(initGameMap(tiles));
-                setCurrentColors(create2dArray(size,size));
-            }
-            }>
-                redraw map
-            </button>
-            <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
-            <button  onClick={() => printArray(tiles, "on print tiles")}>
-                print tiles
-            </button>
-            <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
-            <label>
-              Name:
-              <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />
-            </label>
-            </div>
+        <div>
+        <Board tiles={tiles}
+        currentColors={currentColors}
+        changeColor={changeColor}
+        />
+        <button  onClick={() => {
+            setTiles(initGameMap(tiles));
+            setCurrentColors(create2dArray(size,size));
+        }
+        }>
+        redraw map
+        </button>
+        <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
+        <button  onClick={() => printArray(tiles, "on print tiles")}>
+        print tiles
+        </button>
+        <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        <label>
+        Name:
+        <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />
+        </label>
+        </div>
     );
 }
 
