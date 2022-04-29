@@ -133,8 +133,8 @@ function createInitArray() {
     return tilesPreparation;
 }
 
+let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 function createGameMap(size) {
-    let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
     let gameMap = create2dArray(size, size, {tileType: "grey", colorCode:3} );
 
     let redCount = parseInt(size*size * 0.36);
@@ -198,16 +198,40 @@ function getGamePlanCode(plan){
     return obfus+code+obfus;
 }
 
+function useQueryParams() {
+    const params = new URLSearchParams(
+      window ? window.location.search : {}
+    );
+
+    return new Proxy(params, {
+        get(target, prop) {
+            return target.get(prop)
+        },
+    });
+}
+
 let App = () => {
     let tempTiles = createInitArray();
     tempTiles = initGameMap(tempTiles);
     let [tiles, setTiles] = useState(tempTiles);
-    let [currentColors, setCurrentColors] = useState(create2dArray(size,size));
+    let tempColors = create2dArray(size,size)
+
+    const { gameplan, ...unknown } = useQueryParams();
+    if(gameplan!==null){
+        let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
+            for(let row = 0; row<size; row++) {
+                for(let col = 0; col<size; col++)
+                    tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
+            }
+    }
+    let [currentColors, setCurrentColors] = useState(tempColors);
+
     function changeColor(x,y,color){
         let copy = iHateThis(currentColors);
         copy[x][y] = color;
         setCurrentColors(copy);
     }
+
     printArray(tiles, "redrawing in app");
 
     return (
