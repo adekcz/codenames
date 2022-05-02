@@ -2,12 +2,11 @@ import React, {useState, useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-const size = 5;
-const wordCount= size*size;
 
 function Tile(props) {
     return (
         <button 
+        role="test-tile"
         className={"tile "+props.currentColors[props.x][props.y]} 
         onClick={(e) => props.changeColor(props.x,props.y,props.tileType) }>
         {props.text}
@@ -63,16 +62,16 @@ class Textareademo extends React.Component {
     handleChange(event) {
         let currentValue = event.target.value;
         let lines = (currentValue.match(/\b/g) || '').length / 2;
-        if (lines > wordCount) {
+        if (lines > this.props.size**2) {
             return;
         }
         const newArr = [];
         let arr = currentValue.split(/\b/g);
         arr = arr.filter(word => word.trim() !== "");
-        for(let row = 0; row<size; row++) {
-            for(let col = 0; col<size; col++)
+        for(let row = 0; row<this.props.size; row++) {
+            for(let col = 0; col<this.props.size; col++)
             {
-                let index = row*size + col;
+                let index = row*this.props.size + col;
                 if(arr.length> index) {
                     arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
                 } else {
@@ -81,17 +80,17 @@ class Textareademo extends React.Component {
             }
         }
 
-        while(arr.length) newArr.push(arr.splice(0,size));
+        while(arr.length) newArr.push(arr.splice(0,this.props.size));
         this.props.setTiles(newArr);
         this.setState(
             {
                 textAreaValue: currentValue
             }
         );
-        if (lines < wordCount) {
-            this.setState({status: "you need " + (wordCount-lines) + " more lines"})
+        if (lines < this.props.size**2) {
+            this.setState({status: "you need " + (this.props.size**2-lines) + " more lines"})
         }
-        if (lines === wordCount) {
+        if (lines === this.props.size**2) {
             this.setState({status: "Good job. Words set up! (you now cannot add new words, you can edit though)"})
         }
     }
@@ -106,7 +105,7 @@ class Textareademo extends React.Component {
             <textarea
             value={this.state.textAreaValue}
             onChange={this.handleChange}
-            rows={wordCount}
+            rows={this.props.size**2}
             cols={15}
             />
             </div>
@@ -129,7 +128,7 @@ function create2dArray(rows, cols, def=null) {
     return array;
 
 }
-function createInitArray() {
+function createInitArray(size) {
     let tilesPreparation = create2dArray(size, size);
     /* following can be deleted after prototyping ends*/
     for(let i = 0; i<size;i++)
@@ -164,16 +163,14 @@ function createGameMap(size) {
     return gameMap;
 }
 
-function initGameMap(tiles){
-    console.log("INIT");
-    console.log(tiles.length);
+function initGameMap(tiles, size){
     let gameMap = createGameMap(size);
     for(let row = 0; row < size; row++){
         for(let col = 0; col < size; col++){
             gameMap[row][col].text = tiles[row][col].text;
         }
     }
-    printArray(tiles, "end of initGameMap");
+    //printArray(tiles, "end of initGameMap");
     return gameMap;
 }
 
@@ -217,9 +214,9 @@ function useQueryParams() {
     });
 }
 
-let App = () => {
-    let tempTiles = createInitArray();
-    tempTiles = initGameMap(tempTiles);
+let App = ({size=5, }) => {
+    let tempTiles = createInitArray(size);
+    tempTiles = initGameMap(tempTiles, size);
     let [tiles, setTiles] = useState(tempTiles);
     let tempColors = create2dArray(size,size)
 
@@ -267,7 +264,6 @@ let App = () => {
         }
     }
 
-    printArray(tiles, "redrawing in app");
 
     return (
         <div>
@@ -277,11 +273,11 @@ let App = () => {
         changeColor={changeColor}
         />
         <div>
-        <Textareademo tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        <Textareademo size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
         </div>
         </div>
-        <button  onClick={() => {
-            setTiles(initGameMap(tiles));
+        <button className="redraw" onClick={() => {
+            setTiles(initGameMap(tiles, size));
             setCurrentColors(create2dArray(size,size));
         }
         }>
