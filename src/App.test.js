@@ -24,11 +24,14 @@ test('renders learn react link', () => {
     expect(button).toBeInTheDocument();
 });
 
-test('renders grid of correct size', () => {
+test('renders grid with default size', () => {
     render(<App />);
     let tiles = screen.getAllByRole("test-tile");
-      expect(tiles).toHaveLength(25);
-    render(<App size=4/>);
+    expect(tiles).toHaveLength(25);
+});
+
+test('renders grid with custom size of 16', () => {
+    render(<App size={4}/>);
     let tiles = screen.getAllByRole("test-tile");
-      expect(tiles).toHaveLength(16);
+    expect(tiles).toHaveLength(16);
 });
