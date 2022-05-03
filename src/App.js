@@ -98,11 +98,11 @@ class Textareademo extends React.Component {
     render() {
         return (
             <div>
-            <label>Enter value : </label>
+            <label htmlFor="word-input">Enter value:</label>
             <br />
             <span>{this.state.status}</span>
             <br />
-            <textarea
+            <textarea id="word-input"
             value={this.state.textAreaValue}
             onChange={this.handleChange}
             rows={this.props.size**2}
