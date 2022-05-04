@@ -7,9 +7,10 @@ function Tile(props) {
     return (
         <button 
         role="test-tile"
-        className={"tile "+props.currentColors[props.x][props.y]} 
+        className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
         onClick={(e) => props.changeColor(props.x,props.y,props.tileType) }>
         {props.text}
+        {(props.currentColors[props.x][props.y] ?? "")}
         </button>
     );
 
@@ -119,7 +120,11 @@ function create2dArray(rows, cols, def=null) {
         if(typeof def === 'object'){
             array[row] = [];
             for(let i = 0; i<cols; i++){
-                array[row][i] = {...def};
+                if(def && def?.__proto__ === Object.prototype) {
+                    array[row][i] = {...def};
+                } else {
+                    array[row][i] = def;
+                }
             }
         } else {
             array[row] = Array(cols).fill(def);
@@ -284,9 +289,12 @@ let App = ({size=5, }) => {
         redraw map
         </button>
         <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
-        <label>
-        Name:
-        <input type="text" value={labelForSetGameMapInput} onChange={handleChangeColors} />
+        <label htmlFor="gameplan-input">
+        Set gameplan:
+        <input id="gameplan-input" type="text" onChange={handleChangeColors} />
+        </label>
+        <label id="gameplan-input-message" data-testid="gameplan-label">
+        {labelForSetGameMapInput}
         </label>
         </div>
     );

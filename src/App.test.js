@@ -57,6 +57,22 @@ test('entering word into text area changes tile text', async () => {
     await user.type(textarea, "neco");
     expect(tiles[0]).toHaveTextContent("ahoj");
     expect(tiles[1]).toHaveTextContent("neco");
-    
+})
 
+test('entering gameplan via input', async () => {
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByRole("test-tile");
+    expect(tiles[0]).toHaveClass("tile", {exact: true});
+    let textarea = screen.getByLabelText("Set gameplan:");
+    await user.type(textarea, "001232030010301101300033320311110012320");
+    await user.click(tiles[0]);
+    expect(tiles[0]).toHaveTextContent("0,0grey");
+    expect(tiles[0]).toHaveClass("tile grey", {exact: true});
+    let label = screen.getByTestId("gameplan-label");
+    expect(label).toHaveTextContent("change was succesful");
+    await user.clear(textarea);
+    expect(label).toHaveTextContent("invalid length");
+    await user.type(textarea, "001232000010301101300033320311110012320");
+    await user.click(tiles[0]);
+    expect(tiles[0]).toHaveClass("tile red", {exact: true});
 })
