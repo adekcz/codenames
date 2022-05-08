@@ -55,7 +55,6 @@ test('renders grid with custom size of 16', () => {
 });
 
 
-
 test('entering word into text area changes tile text', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByRole("test-tile");
@@ -104,9 +103,6 @@ test('entering gameplan via input', async () => {
     expect(tiles[0]).toHaveClass("tile red", {exact: true});
 })
 
-
-
-
 test('using URL parameter', async () => {
     const url = '/?gameplan=001232000130113012331000013301310012320';
     changeJSDOMURL({ gameplan: "001232000130113012331000013301310012320" });
@@ -122,18 +118,17 @@ test('using URL parameter', async () => {
     expect(tiles[10]).toHaveClass("tile dark", {exact: true});
 });
 
-
 function setup(jsx) {
-  return {
-    user: userEvent.setup(),
-    ...render(jsx),
-  }
+    return {
+        user: userEvent.setup(),
+        ...render(jsx),
+    }
 }
 
 function changeJSDOMURL(search, url = "https://www.example.com/") {
-  const newURL = new URL(url);
-  newURL.search = new URLSearchParams(search);
-  const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;
-  window.history.replaceState(history.state, null, href);
+    const newURL = new URL(url);
+    newURL.search = new URLSearchParams(search);
+    const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;
+    window.history.replaceState(history.state, null, href);
 }
 

@@ -259,7 +259,6 @@ let App = ({size=5, }) => {
         }
     }
 
-
     return (
         <div>
         <div className='rowC'>
