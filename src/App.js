@@ -100,7 +100,7 @@ class Textareademo extends React.Component {
             <div>
             <label htmlFor="word-input">Enter value:</label>
             <br />
-            <span>{this.state.status}</span>
+            <span data-testid="wordInputStatus">{this.state.status}</span>
             <br />
             <textarea id="word-input"
             value={this.state.textAreaValue}
@@ -176,19 +176,6 @@ function initGameMap(tiles, size){
     }
     //printArray(tiles, "end of initGameMap");
     return gameMap;
-}
-
-function printArray(arr, reason = ""){
-    if(reason !== ""){
-        console.log(reason);
-    }
-    for(let row = 0; row < arr.length; row++) {
-        let acc = "";
-        for(let col = 0; col < arr.length; col++) {
-            acc += arr[row][col].text +":" + arr[row][col].tileType + " ";
-        }
-        console.log(acc);
-    }
 }
 
 function iHateThis(oldArray) {  

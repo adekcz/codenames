@@ -70,6 +70,22 @@ test('entering word into text area changes tile text', async () => {
     expect(tiles[1]).toHaveTextContent("neco");
 })
 
+test('after size*size words you cannot add more lines', async () => {
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByRole("test-tile");
+    let textarea = screen.getByLabelText("Enter value:");
+    for(let i = 0; i<tiles.length;i++){
+        await user.type(textarea, "a{Enter}");
+    }
+    expect(tiles[0]).toHaveTextContent("a");
+    expect(tiles[24]).toHaveTextContent("a");
+    let label = screen.getByTestId("wordInputStatus");
+    expect(label).toHaveTextContent("Good job. Words set up! (you now cannot add new words, you can edit though)");
+    await user.type(textarea, "b{Enter}");
+    expect(textarea).not.toHaveTextContent("b");
+
+})
+
 test('entering gameplan via input', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByRole("test-tile");
