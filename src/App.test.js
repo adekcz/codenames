@@ -79,7 +79,7 @@ test('after size*size words you cannot add more lines', async () => {
     expect(tiles[0]).toHaveTextContent("a");
     expect(tiles[24]).toHaveTextContent("a");
     let label = screen.getByTestId("wordInputStatus");
-    expect(label).toHaveTextContent("Good job. Words set up! (you now cannot add new words, you can edit though)");
+    expect(label).toHaveTextContent("Good job. Words set up! (you cannot add new words anymore, you can edit though)");
     await user.type(textarea, "b{Enter}");
     expect(textarea).not.toHaveTextContent("b");
 

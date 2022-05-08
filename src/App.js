@@ -8,11 +8,10 @@ function Tile(props) {
         <button 
         role="test-tile"
         className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
-        onClick={(e) => props.changeColor(props.x,props.y,props.tileType) }>
+        onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
         {props.text}
         </button>
     );
-
 }
 
 class Board extends React.Component {
@@ -50,7 +49,7 @@ class Board extends React.Component {
     }
 }
 
-class Textareademo extends React.Component {
+class WordsInputArea extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -59,19 +58,14 @@ class Textareademo extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(event) {
-        let currentValue = event.target.value;
-        let lines = (currentValue.match(/\b/g) || '').length / 2;
-        if (lines > this.props.size**2) {
-            return;
-        }
+    update(currentValue, size) {
         const newArr = [];
         let arr = currentValue.split(/\b/g);
         arr = arr.filter(word => word.trim() !== "");
-        for(let row = 0; row<this.props.size; row++) {
-            for(let col = 0; col<this.props.size; col++)
+        for(let row = 0; row<size; row++) {
+            for(let col = 0; col<size; col++)
             {
-                let index = row*this.props.size + col;
+                let index = row*size + col;
                 if(arr.length> index) {
                     arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
                 } else {
@@ -80,20 +74,34 @@ class Textareademo extends React.Component {
             }
         }
 
-        while(arr.length) newArr.push(arr.splice(0,this.props.size));
+        while(arr.length) newArr.push(arr.splice(0,size));
         this.props.setTiles(newArr);
+
+    }
+
+    handleChange(event) {
+        const size = this.props.size;
+        const tilesCount = this.props.size**2;
+
+        let currentValue = event.target.value;
+        let wordCount = (currentValue.match(/\b/g) || '').length / 2;
+        if (wordCount > tilesCount) {
+            return;
+        }
+        this.update(currentValue, size);
         this.setState(
             {
                 textAreaValue: currentValue
             }
         );
-        if (lines < this.props.size**2) {
-            this.setState({status: "you need " + (this.props.size**2-lines) + " more lines"})
+        if (wordCount < tilesCount) {
+            this.setState({status: "you need " + (tilesCount-wordCount) + " more words"})
         }
-        if (lines === this.props.size**2) {
-            this.setState({status: "Good job. Words set up! (you now cannot add new words, you can edit though)"})
+        if (wordCount === tilesCount) {
+            this.setState({status: "Good job. Words set up! (you cannot add new words anymore, you can edit though)"})
         }
     }
+
 
     render() {
         return (
@@ -174,11 +182,10 @@ function initGameMap(tiles, size){
             gameMap[row][col].text = tiles[row][col].text;
         }
     }
-    //printArray(tiles, "end of initGameMap");
     return gameMap;
 }
 
-function iHateThis(oldArray) {  
+function copyNew(oldArray) {  
     return JSON.parse(JSON.stringify(oldArray));
 }
 
@@ -205,30 +212,35 @@ function useQueryParams() {
     });
 }
 
+function handleGameplan(gameplan, colors, tiles) {
+    let size=colors.length;
+    if(gameplan!==null){
+        let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
+        for(let row = 0; row<size; row++) {
+            for(let col = 0; col<size; col++)
+            {
+                colors[row][col] = colorMap[decodedPlan[row*size+col]];
+                tiles[row][col].tileType = colors[row][col];
+                tiles[row][col].colorCode = decodedPlan[row*size+col];
+            }
+        }
+    }
+}
+
 let App = ({size=5, }) => {
     let tempColors = create2dArray(size,size)
     let tempTiles = createInitArray(size);
     tempTiles = initGameMap(tempTiles, size);
 
     const { gameplan, ...unknown } = useQueryParams();
-    if(gameplan!==null){
-        let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
-        for(let row = 0; row<size; row++) {
-            for(let col = 0; col<size; col++)
-            {
-                tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
-                tempTiles[row][col].tileType = tempColors[row][col];
-                tempTiles[row][col].colorCode = decodedPlan[row*size+col];
-            }
-        }
-    }
+    handleGameplan(gameplan, tempColors, tempTiles);
 
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [tiles, setTiles] = useState(tempTiles);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
     function changeColor(x,y,color){
-        let copy = iHateThis(currentColors);
+        let copy = copyNew(currentColors);
         copy[x][y] = color;
         setCurrentColors(copy);
     }
@@ -268,7 +280,7 @@ let App = ({size=5, }) => {
         changeColor={changeColor}
         />
         <div>
-        <Textareademo size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+        <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
         </div>
         </div>
         <button className="redraw" onClick={() => {
