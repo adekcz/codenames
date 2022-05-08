@@ -4,6 +4,7 @@ import App from './App';
 import { unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
 
+
 let container = null;
 beforeEach(() => {
     // setup a DOM element as a render target
@@ -19,10 +20,19 @@ afterEach(() => {
 });
 
 
-test('renders learn react link', () => {
+test('renders redraw button', () => {
     render(<App />);
     let button = screen.getByText("redraw map");
     expect(button).toBeInTheDocument();
+});
+
+test('redrawing resets selected tiles', async () => {
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByRole("test-tile");
+    await user.click(tiles[0]);
+    let button = screen.getByText("redraw map");
+    await user.click(button);
+    expect(tiles[0]).toHaveClass("tile", {exact: true});
 });
 
 test('renders grid with default size', () => {
@@ -38,12 +48,6 @@ test('renders grid with custom size of 16', () => {
 });
 
 
-function setup(jsx) {
-  return {
-    user: userEvent.setup(),
-    ...render(jsx),
-  }
-}
 
 test('entering word into text area changes tile text', async () => {
     const {user} = setup(<App />)
@@ -66,7 +70,7 @@ test('entering gameplan via input', async () => {
     let textarea = screen.getByLabelText("Set gameplan:");
     await user.type(textarea, "001232030010301101300033320311110012320");
     await user.click(tiles[0]);
-    expect(tiles[0]).toHaveTextContent("0,0grey");
+    expect(tiles[0]).toHaveTextContent("0,0");
     expect(tiles[0]).toHaveClass("tile grey", {exact: true});
     let label = screen.getByTestId("gameplan-label");
     expect(label).toHaveTextContent("change was succesful");
@@ -76,3 +80,37 @@ test('entering gameplan via input', async () => {
     await user.click(tiles[0]);
     expect(tiles[0]).toHaveClass("tile red", {exact: true});
 })
+
+
+
+
+test('using URL parameter', async () => {
+    const url = '/?gameplan=001232000130113012331000013301310012320';
+    changeJSDOMURL({ gameplan: "001232000130113012331000013301310012320" });
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByRole("test-tile");
+    await user.click(tiles[0]);
+    await user.click(tiles[1]);
+    await user.click(tiles[2]);
+    expect(tiles[0]).toHaveClass("tile red", {exact: true});
+    expect(tiles[1]).toHaveClass("tile red", {exact: true});
+    expect(tiles[2]).toHaveClass("tile blue", {exact: true});
+    expect(tiles[3]).toHaveClass("tile grey", {exact: true});
+    expect(tiles[10]).toHaveClass("tile dark", {exact: true});
+});
+
+
+function setup(jsx) {
+  return {
+    user: userEvent.setup(),
+    ...render(jsx),
+  }
+}
+
+function changeJSDOMURL(search, url = "https://www.example.com/") {
+  const newURL = new URL(url);
+  newURL.search = new URLSearchParams(search);
+  const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;
+  window.history.replaceState(history.state, null, href);
+}
+

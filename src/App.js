@@ -10,7 +10,6 @@ function Tile(props) {
         className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
         onClick={(e) => props.changeColor(props.x,props.y,props.tileType) }>
         {props.text}
-        {(props.currentColors[props.x][props.y] ?? "")}
         </button>
     );
 
@@ -220,9 +219,6 @@ function useQueryParams() {
 }
 
 let App = ({size=5, }) => {
-    let tempTiles = createInitArray(size);
-    tempTiles = initGameMap(tempTiles, size);
-    let [tiles, setTiles] = useState(tempTiles);
     let tempColors = create2dArray(size,size)
 
     const { gameplan, ...unknown } = useQueryParams();
@@ -234,6 +230,14 @@ let App = ({size=5, }) => {
         }
     }
     let [currentColors, setCurrentColors] = useState(tempColors);
+
+    let tempTiles = createInitArray(size);
+    tempTiles = initGameMap(tempTiles, size);
+    for(let row = 0; row<size; row++) {
+        for(let col = 0; col<size; col++)
+            tempTiles[row][col].tileType = currentColors[row][col];
+    }
+    let [tiles, setTiles] = useState(tempTiles);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
     function changeColor(x,y,color){
