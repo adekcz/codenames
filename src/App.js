@@ -75,7 +75,7 @@ class Textareademo extends React.Component {
                 if(arr.length> index) {
                     arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
                 } else {
-                    arr[index] = {text: "", tileType: this.props.tiles[row][col].tileType};
+                    arr[index] = {...this.props.tiles[row][col], ...{text: ""}};
                 }
             }
         }
@@ -218,6 +218,7 @@ let App = ({size=5, }) => {
             {
                 tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
                 tempTiles[row][col].tileType = tempColors[row][col];
+                tempTiles[row][col].colorCode = decodedPlan[row*size+col];
             }
         }
     }

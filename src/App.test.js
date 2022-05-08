@@ -118,6 +118,24 @@ test('using URL parameter', async () => {
     expect(tiles[10]).toHaveClass("tile dark", {exact: true});
 });
 
+test('codemaster link works', () => {
+    const gameplanCode = '001232000130113012331000013301310012320';
+    changeJSDOMURL({ gameplan: gameplanCode});
+    render(<App />);
+    let link = screen.getByText(/send link/i);
+    expect(link.getAttribute("href")).toEqual("?gameplan="+gameplanCode);
+});
+
+test('codemaster link works after entering words', async () => {
+    const gameplanCode = '001232000130113012331000013301310012320';
+    changeJSDOMURL({ gameplan: gameplanCode});
+    const {user} = setup(<App />)
+    let link = screen.getByText(/send link/i);
+    let textarea = screen.getByLabelText("Enter value:");
+    await user.type(textarea, "ahoj");
+    expect(link.getAttribute("href")).toEqual("?gameplan="+gameplanCode);
+});
+
 function setup(jsx) {
     return {
         user: userEvent.setup(),
@@ -131,4 +149,3 @@ function changeJSDOMURL(search, url = "https://www.example.com/") {
     const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;
     window.history.replaceState(history.state, null, href);
 }
-
