@@ -26,6 +26,13 @@ test('renders redraw button', () => {
     expect(button).toBeInTheDocument();
 });
 
+test('clicking on tile changes it\'s color', async () => {
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByRole("test-tile");
+    await user.click(tiles[0]);
+    expect(tiles[0]).not.toHaveClass("tile", {exact: true});
+});
+
 test('redrawing resets selected tiles', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByRole("test-tile");

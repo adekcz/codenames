@@ -220,23 +220,22 @@ function useQueryParams() {
 
 let App = ({size=5, }) => {
     let tempColors = create2dArray(size,size)
+    let tempTiles = createInitArray(size);
+    tempTiles = initGameMap(tempTiles, size);
 
     const { gameplan, ...unknown } = useQueryParams();
     if(gameplan!==null){
         let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
         for(let row = 0; row<size; row++) {
             for(let col = 0; col<size; col++)
+            {
                 tempColors[row][col] = colorMap[decodedPlan[row*size+col]];
+                tempTiles[row][col].tileType = tempColors[row][col];
+            }
         }
     }
-    let [currentColors, setCurrentColors] = useState(tempColors);
 
-    let tempTiles = createInitArray(size);
-    tempTiles = initGameMap(tempTiles, size);
-    for(let row = 0; row<size; row++) {
-        for(let col = 0; col<size; col++)
-            tempTiles[row][col].tileType = currentColors[row][col];
-    }
+    let [currentColors, setCurrentColors] = useState(tempColors);
     let [tiles, setTiles] = useState(tempTiles);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
