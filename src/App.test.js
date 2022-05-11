@@ -28,14 +28,14 @@ test('renders redraw button', () => {
 
 test('clicking on tile changes it\'s color', async () => {
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     expect(tiles[0]).not.toHaveClass("tile", {exact: true});
 });
 
 test('redrawing resets selected tiles', async () => {
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     let button = screen.getByText("redraw map");
     await user.click(button);
@@ -44,20 +44,20 @@ test('redrawing resets selected tiles', async () => {
 
 test('renders grid with default size', () => {
     render(<App />);
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     expect(tiles).toHaveLength(25);
 });
 
 test('renders grid with custom size of 16', () => {
     render(<App size={4}/>);
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     expect(tiles).toHaveLength(16);
 });
 
 
 test('entering word into text area changes tile text', async () => {
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     expect(tiles[0]).toHaveTextContent("0,0");
     let textarea = screen.getByLabelText("Enter value:");
     await user.type(textarea, "ahoj");
@@ -71,7 +71,7 @@ test('entering word into text area changes tile text', async () => {
 
 test('after size*size words you cannot add more lines', async () => {
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     let textarea = screen.getByLabelText("Enter value:");
     for(let i = 0; i<tiles.length;i++){
         await user.type(textarea, "a{Enter}");
@@ -87,7 +87,7 @@ test('after size*size words you cannot add more lines', async () => {
 
 test('entering gameplan via input', async () => {
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     expect(tiles[0]).toHaveClass("tile", {exact: true});
     let textarea = screen.getByLabelText("Set gameplan:");
     await user.type(textarea, "001232030010301101300033320311110012320");
@@ -107,7 +107,7 @@ test('using URL parameter', async () => {
     const url = '/?gameplan=001232000130113012331000013301310012320';
     changeJSDOMURL({ gameplan: "001232000130113012331000013301310012320" });
     const {user} = setup(<App />)
-    let tiles = screen.getAllByRole("test-tile");
+    let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     await user.click(tiles[1]);
     await user.click(tiles[2]);

@@ -1,5 +1,4 @@
-import React, {useState, useEffect} from 'react';
-import logo from './logo.svg';
+import React, {useState} from 'react';
 import './App.css';
 
 let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
@@ -8,7 +7,7 @@ function Tile(props) {
 
     return (
         <button 
-        role="test-tile"
+        data-testid="test-tile"
         className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
         onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
         {props.text}
@@ -189,6 +188,7 @@ function getGamePlanCode(plan){
     return obfus+code+obfus;
 }
 
+//const { gameplan, ...unknown } = useQueryParams();
 function useQueryParams() {
     const params = new URLSearchParams(
         window ? window.location.search : {}
@@ -221,7 +221,7 @@ let App = ({size=5, }) => {
     let tempTiles = createInitArray(size);
     tempTiles = initGameMap(tempTiles, size);
 
-    const { gameplan, ...unknown } = useQueryParams();
+    const { gameplan } = useQueryParams();
     handleGameplan(gameplan, tempColors, tempTiles);
 
     let [currentColors, setCurrentColors] = useState(tempColors);
