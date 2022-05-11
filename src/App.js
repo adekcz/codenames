@@ -2,8 +2,10 @@ import React, {useState, useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 
 function Tile(props) {
+
     return (
         <button 
         role="test-tile"
@@ -24,7 +26,6 @@ class Board extends React.Component {
         currentColors={currentColors}
         text={this.props.tiles[row][col].text} 
         tileType={this.props.tiles[row][col].tileType} 
-        onClick={this.props.onClick}
         changeColor={changeColor}
             />;
     }
@@ -49,16 +50,11 @@ class Board extends React.Component {
     }
 }
 
-class WordsInputArea extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            textAreaValue: ""
-        };
-        this.handleChange = this.handleChange.bind(this);
-    }
+function WordsInputArea(props)  {
+    let [textAreaValue, setTextAreaValue] = useState("");
+    let [status, setStatus] = useState("");
 
-    update(currentValue, size) {
+    function update(currentValue, size) {
         const newArr = [];
         let arr = currentValue.split(/\b/g);
         arr = arr.filter(word => word.trim() !== "");
@@ -67,58 +63,52 @@ class WordsInputArea extends React.Component {
             {
                 let index = row*size + col;
                 if(arr.length> index) {
-                    arr[index] = {...this.props.tiles[row][col], ...{text: arr[index]}};
+                    arr[index] = {...props.tiles[row][col], ...{text: arr[index]}};
                 } else {
-                    arr[index] = {...this.props.tiles[row][col], ...{text: ""}};
+                    arr[index] = {...props.tiles[row][col], ...{text: ""}};
                 }
             }
         }
 
         while(arr.length) newArr.push(arr.splice(0,size));
-        this.props.setTiles(newArr);
+        props.setTiles(newArr);
 
     }
 
-    handleChange(event) {
-        const size = this.props.size;
-        const tilesCount = this.props.size**2;
+    function handleChange(event) {
+        const size = props.size;
+        const tilesCount = props.size**2;
 
         let currentValue = event.target.value;
         let wordCount = (currentValue.match(/\b/g) || '').length / 2;
         if (wordCount > tilesCount) {
             return;
         }
-        this.update(currentValue, size);
-        this.setState(
-            {
-                textAreaValue: currentValue
-            }
-        );
+        update(currentValue, size);
+        setTextAreaValue(currentValue);
         if (wordCount < tilesCount) {
-            this.setState({status: "you need " + (tilesCount-wordCount) + " more words"})
+            setStatus("you need " + (tilesCount-wordCount) + " more words");
         }
         if (wordCount === tilesCount) {
-            this.setState({status: "Good job. Words set up! (you cannot add new words anymore, you can edit though)"})
+            setStatus("Good job. Words set up! (you cannot add new words anymore, you can edit though)");
         }
     }
 
 
-    render() {
-        return (
-            <div>
-            <label htmlFor="word-input">Enter value:</label>
-            <br />
-            <span data-testid="wordInputStatus">{this.state.status}</span>
-            <br />
-            <textarea id="word-input"
-            value={this.state.textAreaValue}
-            onChange={this.handleChange}
-            rows={this.props.size**2}
-            cols={15}
-            />
-            </div>
-        );
-    }
+    return (
+        <div>
+        <label htmlFor="word-input">Enter value:</label>
+        <br />
+        <span data-testid="wordInputStatus">{status}</span>
+        <br />
+        <textarea id="word-input"
+        value={textAreaValue}
+        onChange={handleChange}
+        rows={props.size**2}
+        cols={15}
+        />
+        </div>
+    );
 }
 
 function create2dArray(rows, cols, def=null) {
@@ -140,9 +130,9 @@ function create2dArray(rows, cols, def=null) {
     return array;
 
 }
+
 function createInitArray(size) {
     let tilesPreparation = create2dArray(size, size);
-    /* following can be deleted after prototyping ends*/
     for(let i = 0; i<size;i++)
         for(let j = 0; j<size;j++)
             tilesPreparation[i][j] = {
@@ -151,7 +141,6 @@ function createInitArray(size) {
     return tilesPreparation;
 }
 
-let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 function createGameMap(size) {
     let gameMap = create2dArray(size, size, {tileType: "grey", colorCode:3} );
 
@@ -274,30 +263,30 @@ let App = ({size=5, }) => {
 
     return (
         <div>
-        <div className='rowC'>
-        <Board tiles={tiles}
-        currentColors={currentColors}
-        changeColor={changeColor}
-        />
-        <div>
-        <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
-        </div>
-        </div>
-        <button className="redraw" onClick={() => {
-            setTiles(initGameMap(tiles, size));
-            setCurrentColors(create2dArray(size,size));
-        }
-        }>
-        redraw map
-        </button>
-        <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
-        <label htmlFor="gameplan-input">
-        Set gameplan:
-        <input id="gameplan-input" type="text" onChange={handleChangeColors} />
-        </label>
-        <label id="gameplan-input-message" data-testid="gameplan-label">
-        {labelForSetGameMapInput}
-        </label>
+            <div className='rowC'>
+                <Board tiles={tiles}
+                currentColors={currentColors}
+                changeColor={changeColor}
+                />
+                <div>
+                <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+                </div>
+            </div>
+            <button className="redraw" onClick={() => {
+                setTiles(initGameMap(tiles, size));
+                setCurrentColors(create2dArray(size,size));
+                }
+                }>
+                redraw map
+            </button>
+            <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
+            <label htmlFor="gameplan-input">
+            Set gameplan:
+            <input id="gameplan-input" type="text" onChange={handleChangeColors} />
+            </label>
+            <label id="gameplan-input-message" data-testid="gameplan-label">
+            {labelForSetGameMapInput}
+            </label>
         </div>
     );
 }
