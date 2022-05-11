@@ -7,10 +7,10 @@ function Tile(props) {
 
     return (
         <button 
-        data-testid="test-tile"
-        className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
-        onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
-        {props.text}
+            data-testid="test-tile"
+            className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
+            onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
+            {props.text}
         </button>
     );
 }
@@ -19,33 +19,33 @@ class Board extends React.Component {
 
     renderTile(row, col, changeColor, currentColors) {
         return <Tile
-        key={row + " " + col}
-        x={row}
-        y={col}
-        currentColors={currentColors}
-        text={this.props.tiles[row][col].text} 
-        tileType={this.props.tiles[row][col].tileType} 
-        changeColor={changeColor}
-            />;
+            key={row + " " + col}
+            x={row}
+            y={col}
+            currentColors={currentColors}
+            text={this.props.tiles[row][col].text} 
+            tileType={this.props.tiles[row][col].tileType} 
+            changeColor={changeColor}
+        />;
     }
 
     render() {
         return (
             <div>
-            { this.props.tiles.map(
-                (row, rowId) => 
-                (<div className="board-row" key={rowId}>
-                    {
-                        row.map((col, colId) => 
-                        this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
-                    )
-                    }
+                { this.props.tiles.map(
+                    (row, rowId) => 
+                    (<div className="board-row" key={rowId}>
+                        {
+                            row.map((col, colId) => 
+                                this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
+                            )
+                        }
                     </div>
+                    )
                 )
-            )
-            }
+                }
             </div>
-    )
+        )
     }
 }
 
@@ -96,16 +96,16 @@ function WordsInputArea(props)  {
 
     return (
         <div>
-        <label htmlFor="word-input">Enter value:</label>
-        <br />
-        <span data-testid="wordInputStatus">{status}</span>
-        <br />
-        <textarea id="word-input"
-        value={textAreaValue}
-        onChange={handleChange}
-        rows={props.size**2}
-        cols={15}
-        />
+            <label htmlFor="word-input">Enter value:</label>
+            <br />
+            <span data-testid="wordInputStatus">{status}</span>
+            <br />
+            <textarea id="word-input"
+                value={textAreaValue}
+                onChange={handleChange}
+                rows={props.size**2}
+                cols={15}
+            />
         </div>
     );
 }
@@ -265,27 +265,27 @@ let App = ({size=5, }) => {
         <div>
             <div className='rowC'>
                 <Board tiles={tiles}
-                currentColors={currentColors}
-                changeColor={changeColor}
+                    currentColors={currentColors}
+                    changeColor={changeColor}
                 />
                 <div>
-                <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+                    <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
                 </div>
             </div>
             <button className="redraw" onClick={() => {
                 setTiles(initGameMap(tiles, size));
                 setCurrentColors(create2dArray(size,size));
-                }
+            }
                 }>
                 redraw map
             </button>
             <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
             <label htmlFor="gameplan-input">
-            Set gameplan:
-            <input id="gameplan-input" type="text" onChange={handleChangeColors} />
+                Set gameplan:
+                <input id="gameplan-input" type="text" onChange={handleChangeColors} />
             </label>
             <label id="gameplan-input-message" data-testid="gameplan-label">
-            {labelForSetGameMapInput}
+                {labelForSetGameMapInput}
             </label>
         </div>
     );

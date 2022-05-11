@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import { unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
 
 
 let container = null;
@@ -104,7 +103,6 @@ test('entering gameplan via input', async () => {
 })
 
 test('using URL parameter', async () => {
-    const url = '/?gameplan=001232000130113012331000013301310012320';
     changeJSDOMURL({ gameplan: "001232000130113012331000013301310012320" });
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
@@ -147,5 +145,5 @@ function changeJSDOMURL(search, url = "https://www.example.com/") {
     const newURL = new URL(url);
     newURL.search = new URLSearchParams(search);
     const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;
-    window.history.replaceState(history.state, null, href);
+    window.history.replaceState(window.history.state, null, href);
 }
