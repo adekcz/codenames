@@ -4,11 +4,11 @@ import './App.css';
 let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 
 function Tile(props) {
-
+    let color = props.currentColors[props.x][props.y];
     return (
         <button 
             data-testid="test-tile"
-            className={"tile " + (props.currentColors[props.x][props.y] ?? "")} 
+            className={"tile" + ( color ? " " + color : "")} 
             onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
             {props.text}
         </button>
@@ -95,17 +95,17 @@ function WordsInputArea(props)  {
 
 
     return (
-        <div>
+        <div className="wordInputWrapper">
+            <div>
             <label htmlFor="word-input">Enter value:</label>
-            <br />
-            <span data-testid="wordInputStatus">{status}</span>
-            <br />
+            </div>
             <textarea id="word-input"
                 value={textAreaValue}
                 onChange={handleChange}
                 rows={props.size**2}
                 cols={15}
             />
+            <p data-testid="wordInputStatus">{status}</p>
         </div>
     );
 }
@@ -268,25 +268,33 @@ let App = ({size=5, }) => {
                     currentColors={currentColors}
                     changeColor={changeColor}
                 />
-                <div>
-                    <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+                <div className='columnFlex'>
+                    <div>
+                        <button className="redraw" onClick={() => {
+                            setTiles(initGameMap(tiles, size));
+                            setCurrentColors(create2dArray(size,size));
+                        }
+                            }>
+                            redraw map
+                        </button>
+                    </div>
+                    <div>
+                        <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
+                    </div>
+                    <div>
+                        <label htmlFor="gameplan-input">
+                            Set gameplan:
+                            <input id="gameplan-input" type="text" onChange={handleChangeColors} />
+                        </label>
+                        <label id="gameplan-input-message" data-testid="gameplan-label">
+                            {labelForSetGameMapInput}
+                        </label>
+                    </div>
+                    <div>
+                        <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+                    </div>
                 </div>
             </div>
-            <button className="redraw" onClick={() => {
-                setTiles(initGameMap(tiles, size));
-                setCurrentColors(create2dArray(size,size));
-            }
-                }>
-                redraw map
-            </button>
-            <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
-            <label htmlFor="gameplan-input">
-                Set gameplan:
-                <input id="gameplan-input" type="text" onChange={handleChangeColors} />
-            </label>
-            <label id="gameplan-input-message" data-testid="gameplan-label">
-                {labelForSetGameMapInput}
-            </label>
         </div>
     );
 }

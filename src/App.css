@@ -23,6 +23,12 @@ body {
     width: 140px;
 }
 
+[class="tile"]:hover {
+    font-size: 26px;
+    border: 5px ridge black;
+
+}
+
 .red {
     background: red;
 }
@@ -34,4 +40,20 @@ body {
 }
 .grey {
     background: grey;
+}
+
+.columnFlex {
+    margin-left: 20px;
+}
+
+.columnFlex *:not(:first-child) {
+    margin-top: 10px;
+}
+
+.wordInputWrapper {
+    margin-top: 20px;
+}
+
+.columnFlex .wordInputWrapper textarea {
+    margin-top: 5px;
 }
