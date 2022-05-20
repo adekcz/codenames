@@ -263,6 +263,7 @@ let App = ({size=5, }) => {
 
     return (
         <div>
+            <h1>Ugly codenames</h1>
             <div className='rowFlex'>
                 <Board tiles={tiles}
                     currentColors={currentColors}
@@ -295,6 +296,24 @@ let App = ({size=5, }) => {
                     </div>
                 </div>
             </div>
+            <h2>About</h2>
+            <h3>Basics</h3>
+            <p>
+                Red team always starts.
+            </p>
+            <p>
+                Use <i>right click -> copy link address</i> to send reveald game plan to codemasters. Do not click on it ;) 
+            </p>
+            <p>
+                Enter 25 words into big text area.
+            </p>
+            <h3>Advanced</h3>
+            <p>
+                Redraw map resets clicked tiles and generates new game plan.
+            </p>
+            <p>
+                You can use code from URL sent to codemaster to regenerate given game plan.
+            </p>
         </div>
     );
 }
