@@ -263,7 +263,7 @@ let App = ({size=5, }) => {
 
     return (
         <div>
-            <div className='rowC'>
+            <div className='rowFlex'>
                 <Board tiles={tiles}
                     currentColors={currentColors}
                     changeColor={changeColor}
