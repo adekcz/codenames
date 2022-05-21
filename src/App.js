@@ -183,10 +183,10 @@ function copyNew(oldArray) {
  */
 function encodeGamePlan(plan){
     let code="";
-    for(let i=0;i<plan.length;i++){
-        for(let j=0;j<plan[i].length;j++){
-            if(Math.random() > 0.5) {
-                code+= Math.floor(Math.random()*5+5)
+    for (let i=0;i<plan.length;i++) {
+        for (let j=0;j<plan[i].length;j++) {
+            while (Math.random() > 0.3) {
+                code+= Math.floor(Math.random()*5+5);
             }
             code+=plan[j][i].colorCode;
         }
