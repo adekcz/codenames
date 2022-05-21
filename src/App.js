@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
+import './images/rip.png';
 
 let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 

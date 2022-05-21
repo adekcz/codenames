@@ -36,7 +36,13 @@ body {
     background: blue;
 }
 .dark {
-    background: lime;
+    background-image: url("./images/rip.png");
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    color: white;
 }
 .grey {
     background: grey;
