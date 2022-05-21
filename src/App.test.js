@@ -87,23 +87,25 @@ test('after size*size words you cannot add more lines', async () => {
 test('entering gameplan via input', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
-    expect(tiles[0]).toHaveClass("tile", {exact: true});
+    let tile = tiles[8];
+    expect(tile).toHaveClass("tile", {exact: true});
     let textarea = screen.getByLabelText("Set gameplan:");
-    await user.type(textarea, "001232030010301101300033320311110012320");
-    await user.click(tiles[0]);
-    expect(tiles[0]).toHaveTextContent("0,0");
-    expect(tiles[0]).toHaveClass("tile grey", {exact: true});
+    await user.type(textarea, "8083011601381313707308281061360073910");
+    await user.click(tile);
+    expect(tile).toHaveTextContent("1,3");
+    expect(tile).toHaveClass("tile blue", {exact: true});
     let label = screen.getByTestId("gameplan-label");
     expect(label).toHaveTextContent("change was succesful");
     await user.clear(textarea);
     expect(label).toHaveTextContent("invalid length");
-    await user.type(textarea, "001232000010301101300033320311110012320");
-    await user.click(tiles[0]);
-    expect(tiles[0]).toHaveClass("tile red", {exact: true});
+    await user.type(textarea, "36190151015318203016008330138390081");
+    tile = tiles[10];
+    await user.click(tile);
+    expect(tile).toHaveClass("tile red", {exact: true});
 })
 
 test('using URL parameter', async () => {
-    changeJSDOMURL({ gameplan: "001232000130113012331000013301310012320" });
+    changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910" });
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
@@ -112,26 +114,40 @@ test('using URL parameter', async () => {
     expect(tiles[0]).toHaveClass("tile red", {exact: true});
     expect(tiles[1]).toHaveClass("tile red", {exact: true});
     expect(tiles[2]).toHaveClass("tile blue", {exact: true});
-    expect(tiles[3]).toHaveClass("tile grey", {exact: true});
-    expect(tiles[10]).toHaveClass("tile dark", {exact: true});
+    expect(tiles[3]).toHaveClass("tile dark", {exact: true});
+    expect(tiles[5]).toHaveClass("tile grey", {exact: true});
 });
 
+function filter(code){
+    let filtered = "";
+    for (let c of code) {
+        if(parseInt(c) >= 0 && parseInt(c) <=3) {
+            filtered += c;
+        }
+    }
+    return filtered;
+}
+
 test('codemaster link works', () => {
-    const gameplanCode = '001232000130113012331000013301310012320';
+    const gameplanCode = '8083011601381313707308281061360073910';
+    let filteredCode = filter(gameplanCode);
     changeJSDOMURL({ gameplan: gameplanCode});
     render(<App />);
-    let link = screen.getByText(/send link/i);
-    expect(link.getAttribute("href")).toEqual("?gameplan="+gameplanCode);
+    let href = screen.getByText(/send link/i).getAttribute("href");
+    let filteredHref  = filter(href);
+    expect(filteredHref).toEqual(filteredCode);
 });
 
 test('codemaster link works after entering words', async () => {
-    const gameplanCode = '001232000130113012331000013301310012320';
+    const gameplanCode = '8083011601381313707308281061360073910';
+    let filteredCode = filter(gameplanCode);
     changeJSDOMURL({ gameplan: gameplanCode});
     const {user} = setup(<App />)
-    let link = screen.getByText(/send link/i);
     let textarea = screen.getByLabelText("Enter value:");
     await user.type(textarea, "ahoj");
-    expect(link.getAttribute("href")).toEqual("?gameplan="+gameplanCode);
+    let href = screen.getByText(/send link/i).getAttribute("href");
+    let filteredHref  = filter(href);
+    expect(filteredHref).toEqual(filteredCode);
 });
 
 function setup(jsx) {

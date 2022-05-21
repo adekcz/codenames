@@ -178,15 +178,38 @@ function copyNew(oldArray) {
     return JSON.parse(JSON.stringify(oldArray));
 }
 
-const obfus = "0012320";
-function getGamePlanCode(plan){
+/**
+ * scrambles game map plus adds random numbers out of range;
+ */
+function encodeGamePlan(plan){
     let code="";
     for(let i=0;i<plan.length;i++){
         for(let j=0;j<plan[i].length;j++){
-            code+=plan[i][j].colorCode;
+            if(Math.random() > 0.5) {
+                code+= Math.floor(Math.random()*5+5)
+            }
+            code+=plan[j][i].colorCode;
         }
     }
-    return obfus+code+obfus;
+    return code;
+}
+
+function decodeGamePlan(encoded, size){
+    let filtered = ""
+    for (let c of encoded) {
+        if(parseInt(c) >= 0 && parseInt(c) <=3) {
+            filtered += c;
+        }
+    }
+
+    let decoded = new Array(size*size);
+    for(let i=0;i<size;i++){
+        for(let j=0;j<size;j++){
+            decoded[j*size + i] = filtered[i*size+j];
+        }
+    }
+    return decoded;
+
 }
 
 //const { gameplan, ...unknown } = useQueryParams();
@@ -205,7 +228,7 @@ function useQueryParams() {
 function handleGameplan(gameplan, colors, tiles) {
     let size=colors.length;
     if(gameplan!==null){
-        let decodedPlan=gameplan.substring(obfus.length, gameplan.length-obfus.length);
+        let decodedPlan=decodeGamePlan(gameplan, tiles[0].length);
         for(let row = 0; row<size; row++) {
             for(let col = 0; col<size; col++)
             {
@@ -235,17 +258,27 @@ let App = ({size=5, }) => {
         setCurrentColors(copy);
     }
 
+    function validateGameplan(code, size) {
+        let count = 0;
+        for(let c of code){
+            if(parseInt(c) >=0 && parseInt(c) <=3) {
+                count++;
+            }
+        }
+        return count === size*size;
+    }
+
     function handleChangeColors(event){
         setLabelForSetGameMapInput("processing");
         let value = event.target.value;  
-        if(value.length !== size*size + 2*obfus.length) {
+        if(!validateGameplan(value, size)) {
             setLabelForSetGameMapInput("invalid length");
             return;
         }
         let result = create2dArray(size,size);
         let resultTiles = create2dArray(size,size);
 
-        let decodedPlan=value.substring(obfus.length, value.length-obfus.length);
+        let decodedPlan=decodeGamePlan(value, size);
         for(let row = 0; row<size; row++) {
             for(let col = 0; col<size; col++) {
                 resultTiles[row][col] = {...tiles[row][col]};
@@ -281,7 +314,7 @@ let App = ({size=5, }) => {
                         </button>
                     </div>
                     <div>
-                        <a href={"?gameplan="+getGamePlanCode(tiles)} > send link to codemaster, do not click</a>
+                        <a href={"?gameplan="+encodeGamePlan(tiles)} > send link to codemaster, do not click</a>
                     </div>
                     <div>
                         <label htmlFor="gameplan-input">
