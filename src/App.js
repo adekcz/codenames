@@ -22,32 +22,29 @@ function Tile(props) {
     );
 }
 
-class Board extends React.Component {
-
-    renderTile(row, col, changeColor, currentColors) {
+function Board(props)  {
+    function renderTile(row, col, changeColor, currentColors) {
         return ( <Tile
             key={row + " " + col}
             x={row}
             y={col}
             currentColors={currentColors}
-            text={this.props.tiles[row][col].text} 
-            tileType={this.props.tiles[row][col].tileType} 
+            text={props.tiles[row][col].text} 
+            tileType={props.tiles[row][col].tileType} 
             changeColor={changeColor}
         />);
     }
 
-    render() {
-        return (
-            <div className="container">
-                  {
-                      Array.from({ length: this.props.size**2 }, 
-                    (_, i) => 
-                        this.renderTile(Math.floor(i/this.props.size), i % this.props.size , this.props.changeColor, this.props.currentColors) 
-                      )
-                }
-            </div>
-        )
-    }
+    return (
+        <div className="board">
+              {
+                  Array.from({ length: props.size**2 }, 
+                (_, i) => 
+                    renderTile(Math.floor(i/props.size), i % props.size , props.changeColor, props.currentColors) 
+                  )
+            }
+        </div>
+    )
 }
 
 function WordsInputArea(props)  {
