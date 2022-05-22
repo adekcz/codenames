@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import './images/rip.png';
 
@@ -23,6 +23,24 @@ function Tile(props) {
 }
 
 function Board(props)  {
+    function getCurrentSize() {
+        const smallerDimension =  window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
+        return smallerDimension * 0.9;
+    }
+
+    const [boardSize, setBoardSize] = useState(getCurrentSize());
+    useEffect(() => {
+        const updateWindowDimensions = () => {
+            setBoardSize(getCurrentSize());
+            console.log("updating height");
+        };
+
+        window.addEventListener("resize", updateWindowDimensions);
+
+        return () => window.removeEventListener("resize", updateWindowDimensions) 
+
+    }, []);;
+
     function renderTile(row, col, changeColor, currentColors) {
         return ( <Tile
             key={row + " " + col}
@@ -36,7 +54,7 @@ function Board(props)  {
     }
 
     return (
-        <div className="board">
+        <div className="board" style={{width: boardSize, height: boardSize}} >
               {
                   Array.from({ length: props.size**2 }, 
                 (_, i) => 
