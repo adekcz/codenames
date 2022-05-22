@@ -66,7 +66,8 @@ function Board(props)  {
 }
 
 function WordsInputArea(props)  {
-    let [textAreaValue, setTextAreaValue] = useState("");
+    const defaultWords = props.words ? props.words.split(";").join("\n") : "";
+    let [textAreaValue, setTextAreaValue] = useState(defaultWords);
     let [status, setStatus] = useState("");
 
     function update(currentValue, size) {
@@ -209,6 +210,20 @@ function encodeGamePlan(plan){
     return code;
 }
 
+function getWords(tiles){
+    let words = [];
+
+    for (let i=0;i<tiles.length;i++) {
+        for (let j=0;j<tiles[i].length;j++) {
+            if(tiles[i][j] && tiles[i][j].text) {
+                words.push(tiles[i][j].text);
+            }
+
+        }
+    }
+    return words.join(";");
+}
+
 function decodeGamePlan(encoded, size){
     let filtered = ""
     for (let c of encoded) {
@@ -240,8 +255,17 @@ function useQueryParams() {
     });
 }
 
-function handleGameplan(gameplan, colors, tiles) {
+function convert2dTo1d(row, col, size) {
+    return row*size + col;
+}
+
+function handleGameplan(gameplan, unsplittedWords, colors, tiles) {
     let size=colors.length;
+    let words = [];
+    if(unsplittedWords) {
+        words = unsplittedWords.split(";");
+    }
+
     if(gameplan!==null){
         let decodedPlan=decodeGamePlan(gameplan, tiles[0].length);
         for(let row = 0; row<size; row++) {
@@ -250,6 +274,15 @@ function handleGameplan(gameplan, colors, tiles) {
                 colors[row][col] = colorMap[decodedPlan[row*size+col]];
                 tiles[row][col].tileType = colors[row][col];
                 tiles[row][col].colorCode = decodedPlan[row*size+col];
+                if (words.length > convert2dTo1d(row, col, size)) {
+                    if(words[convert2dTo1d(row, col, size)]) {
+                        tiles[row][col].text = words[convert2dTo1d(row, col, size)];
+                    } else {
+                        tiles[row][col].text = "" ;
+                    }
+                } else {
+                        tiles[row][col].text = "" ;
+                }
             }
         }
     }
@@ -260,8 +293,8 @@ let App = ({size=5, }) => {
     let tempTiles = createInitArray(size);
     tempTiles = initGameMap(tempTiles, size);
 
-    const { gameplan } = useQueryParams();
-    handleGameplan(gameplan, tempColors, tempTiles);
+    const { gameplan, words } = useQueryParams();
+    handleGameplan(gameplan, words, tempColors, tempTiles);
 
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [tiles, setTiles] = useState(tempTiles);
@@ -330,7 +363,7 @@ let App = ({size=5, }) => {
                         </button>
                     </div>
                     <div>
-                        <a href={"?gameplan="+encodeGamePlan(tiles)} > send link to codemaster, do not click</a>
+                        <a href={"?words=" + getWords(tiles) + "&gameplan=" + encodeGamePlan(tiles)} > send link to codemaster, do not click</a>
                     </div>
                     <div>
                         <label htmlFor="gameplan-input">
@@ -342,7 +375,12 @@ let App = ({size=5, }) => {
                         </label>
                     </div>
                     <div>
-                        <WordsInputArea size={size} tiles={tiles} setTiles={ (value) => setTiles(value) }    />
+                        <WordsInputArea 
+                            size={size}
+                            tiles={tiles}
+                            setTiles={ (value) => setTiles(value) }
+                            words={words}
+                        />
                     </div>
                 </div>
             </div>

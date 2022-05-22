@@ -89,4 +89,13 @@ body {
     text-align: center;
     display:table-cell;
     vertical-align:middle;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+
+@media screen and (max-width: 479px) {
+    .tile {
+        font-size: 12px;
+    }
 }
