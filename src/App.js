@@ -25,7 +25,7 @@ function Tile(props) {
 function Board(props)  {
     function getCurrentSize() {
         const smallerDimension =  window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
-        return smallerDimension * 0.9;
+        return smallerDimension;
     }
 
     const [boardSize, setBoardSize] = useState(getCurrentSize());
