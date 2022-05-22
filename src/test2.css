@@ -1,0 +1,17 @@
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columns */
+  grid-gap: 10px;
+}
+
+.container>* {
+  aspect-ratio: 1 / 1; /* a square ratio */
+  border: 1px solid;
+  
+  /* center content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

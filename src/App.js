@@ -7,19 +7,25 @@ let colorMap = {0:"red", 1:"blue", 2:"dark", 3:"grey"};
 function Tile(props) {
     let color = props.currentColors[props.x][props.y];
     return (
-        <button 
-            data-testid="test-tile"
-            className={"tile" + ( color ? " " + color : "")} 
-            onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
-            {props.text}
-        </button>
+        <div className="square">
+            <div className="content">
+                <div className="table">
+                        <div 
+                            data-testid="test-tile"
+                            className={"tile" + ( color ? " " + color : "")} 
+                            onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
+                            {props.text}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
 class Board extends React.Component {
 
     renderTile(row, col, changeColor, currentColors) {
-        return <Tile
+        return ( <Tile
             key={row + " " + col}
             x={row}
             y={col}
@@ -27,23 +33,17 @@ class Board extends React.Component {
             text={this.props.tiles[row][col].text} 
             tileType={this.props.tiles[row][col].tileType} 
             changeColor={changeColor}
-        />;
+        />);
     }
 
     render() {
         return (
-            <div>
-                { this.props.tiles.map(
-                    (row, rowId) => 
-                    (<div className="board-row" key={rowId}>
-                        {
-                            row.map((col, colId) => 
-                                this.renderTile(rowId, colId, this.props.changeColor, this.props.currentColors)
-                            )
-                        }
-                    </div>
-                    )
-                )
+            <div className="container">
+                  {
+                      Array.from({ length: this.props.size**2 }, 
+                    (_, i) => 
+                        this.renderTile(Math.floor(i/this.props.size), i % this.props.size , this.props.changeColor, this.props.currentColors) 
+                      )
                 }
             </div>
         )
@@ -297,12 +297,13 @@ let App = ({size=5, }) => {
 
     return (
         <div>
-            <h1>Ugly codenames</h1>
-            <div className='rowFlex'>
                 <Board tiles={tiles}
                     currentColors={currentColors}
                     changeColor={changeColor}
+                    size={size}
                 />
+            <h1>Ugly codenames</h1>
+            <div className='rowFlex'>
                 <div className='columnFlex'>
                     <div>
                         <button className="redraw" onClick={() => {

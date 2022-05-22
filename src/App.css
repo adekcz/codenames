@@ -8,6 +8,7 @@ body {
     flex-direction: row;
 }
 
+/*
 .tile {
     border: 1px solid #999;
     background: #fff;
@@ -19,9 +20,8 @@ body {
     margin-top: -1px;
     padding: 0;
     text-align: center;
-    height: 140px;
-    width: 140px;
 }
+*/
 
 [class="tile"]:hover {
     font-size: 26px;
@@ -62,4 +62,54 @@ body {
 
 .columnFlex .wordInputWrapper textarea {
     margin-top: 5px;
+}
+
+
+/*
+.container {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)); 
+  grid-gap: 10px;
+}
+
+.container > * {
+  aspect-ratio: 1 / 1;
+  border: 1px solid;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+*/
+
+
+.square {
+    float:left;
+    position: relative;
+    width: 18%;
+    padding-bottom : 18%; /* = width for a 1:1 aspect ratio */
+    margin:1%;
+    background-color:#1E1E1E;
+    overflow:hidden;
+}
+
+.content {
+    position:absolute;
+    height:90%; /* = 100% - 2*5% padding */
+    width:90%; /* = 100% - 2*5% padding */
+    padding: 5%;
+    text-align: center;
+    
+}
+.table{
+    display:table;
+    width:100%;
+    height:100%;
+}
+.tile {
+    display:table-cell;
+    vertical-align:middle;
 }
