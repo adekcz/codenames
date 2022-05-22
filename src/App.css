@@ -8,34 +8,21 @@ body {
     flex-direction: row;
 }
 
-/*
-.tile {
-    border: 1px solid #999;
-    background: #fff;
-    float: left;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 34px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-}
-*/
-
 [class="tile"]:hover {
     font-size: 26px;
     border: 5px ridge black;
 
 }
 
-.red {
+.tile.red {
     background: red;
 }
-.blue {
+
+.tile.blue {
     background: blue;
 }
-.dark {
+
+.tile.dark {
     background-image: url("./images/rip.png");
     background-repeat: no-repeat;
     background-size: auto 100%;
@@ -44,7 +31,8 @@ body {
     -webkit-text-stroke-color: black;
     color: white;
 }
-.grey {
+
+.tile.grey {
     background: grey;
 }
 
@@ -64,35 +52,12 @@ body {
     margin-top: 5px;
 }
 
-
-/*
-.container {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr)); 
-  grid-gap: 10px;
-}
-
-.container > * {
-  aspect-ratio: 1 / 1;
-  border: 1px solid;
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-
-*/
-
-
 .square {
     float:left;
     position: relative;
     width: 18%;
     padding-bottom : 18%; /* = width for a 1:1 aspect ratio */
     margin:1%;
-    background-color:#1E1E1E;
     overflow:hidden;
 }
 
@@ -102,14 +67,24 @@ body {
     width:90%; /* = 100% - 2*5% padding */
     padding: 5%;
     text-align: center;
-    
+
 }
 .table{
     display:table;
     width:100%;
     height:100%;
 }
+
 .tile {
+    border: 1px solid #999;
+    background: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
     display:table-cell;
     vertical-align:middle;
 }

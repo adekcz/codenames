@@ -10,11 +10,11 @@ function Tile(props) {
         <div className="square">
             <div className="content">
                 <div className="table">
-                        <div 
-                            data-testid="test-tile"
-                            className={"tile" + ( color ? " " + color : "")} 
-                            onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
-                            {props.text}
+                    <div 
+                        data-testid="test-tile"
+                        className={"tile" + ( color ? " " + color : "")} 
+                        onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
+                        {props.text}
                     </div>
                 </div>
             </div>
