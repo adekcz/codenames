@@ -25,7 +25,7 @@ function Tile(props) {
 function Board(props)  {
     function getCurrentSize() {
         const smallerDimension =  window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
-        return smallerDimension;
+        return smallerDimension * 0.95;
     }
 
     const [boardSize, setBoardSize] = useState(getCurrentSize());
@@ -312,13 +312,13 @@ let App = ({size=5, }) => {
 
     return (
         <div>
+            <h1>Ugly codenames</h1>
+            <div className='rowFlex'>
                 <Board tiles={tiles}
                     currentColors={currentColors}
                     changeColor={changeColor}
                     size={size}
                 />
-            <h1>Ugly codenames</h1>
-            <div className='rowFlex'>
                 <div className='columnFlex'>
                     <div>
                         <button className="redraw" onClick={() => {

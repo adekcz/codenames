@@ -6,6 +6,7 @@ body {
 .rowFlex {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 [class="tile"]:hover {
@@ -67,8 +68,8 @@ body {
 
 .content {
     position:absolute;
-    height:100%; /* = 100% - 2*5% padding */
-    width:100%; /* = 100% - 2*5% padding */
+    height:100%; 
+    width:100%; 
     padding: 0%;
     text-align: center;
 
