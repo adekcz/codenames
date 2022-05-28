@@ -60,6 +60,10 @@ test('entering word into text area changes tile text', async () => {
     expect(tiles[0]).toHaveTextContent("0,0");
     let textarea = screen.getByLabelText("Enter value:");
     await user.type(textarea, "ahoj");
+    expect(tiles[0]).toHaveTextContent("0,0");
+    await user.clear(textarea);
+    expect(tiles[0]).toHaveTextContent("");
+    await user.type(textarea, "ahoj");
     expect(tiles[0]).toHaveTextContent("ahoj");
     expect(tiles[1]).toHaveTextContent("");
     await user.type(textarea, "{Enter}");
@@ -72,6 +76,7 @@ test('after size*size words you cannot add more lines', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     let textarea = screen.getByLabelText("Enter value:");
+    await user.clear(textarea);
     for(let i = 0; i<tiles.length;i++){
         await user.type(textarea, "a{Enter}");
     }
@@ -120,7 +125,7 @@ test('using URL parameter', async () => {
 
 function filter(code){
     let filtered = "";
-    for (let c of code) {
+    for (let c of code.slice(code.indexOf("gameplan")+1)) {
         if(parseInt(c) >= 0 && parseInt(c) <=3) {
             filtered += c;
         }
@@ -148,6 +153,26 @@ test('codemaster link works after entering words', async () => {
     let href = screen.getByText(/send link/i).getAttribute("href");
     let filteredHref  = filter(href);
     expect(filteredHref).toEqual(filteredCode);
+    expect(href).toContain("ahoj");
+});
+
+test('codemaster link works with entered words', async () => {
+    changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910",
+            wordsInUrl: "word1;word2"
+    });
+    const {user} = setup(<App />)
+    let tiles = screen.getAllByTestId("test-tile");
+    await user.click(tiles[0]);
+    await user.click(tiles[1]);
+    await user.click(tiles[2]);
+    expect(tiles[0]).toHaveClass("tile red", {exact: true});
+    expect(tiles[1]).toHaveClass("tile red", {exact: true});
+    expect(tiles[2]).toHaveClass("tile blue", {exact: true});
+    expect(tiles[3]).toHaveClass("tile dark", {exact: true});
+    expect(tiles[5]).toHaveClass("tile grey", {exact: true});
+    expect(tiles[0]).toHaveTextContent("word1");
+    expect(tiles[1]).toHaveTextContent("word2");
+    expect(tiles[2]).toHaveTextContent("");
 });
 
 function setup(jsx) {

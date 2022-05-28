@@ -14,7 +14,7 @@ function Tile(props) {
                         data-testid="test-tile"
                         className={"tile" + ( color ? " " + color : "")} 
                         onClick={(e) => props.changeColor(props.x, props.y, props.tileType) }>
-                        {props.text}
+                        {props.word}
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@ function Board(props)  {
             x={row}
             y={col}
             currentColors={currentColors}
-            text={props.tiles[row][col].text} 
+            word={props.words[row*props.size+col]} 
             tileType={props.tiles[row][col].tileType} 
             changeColor={changeColor}
         />);
@@ -58,7 +58,7 @@ function Board(props)  {
               {
                   Array.from({ length: props.size**2 }, 
                 (_, i) => 
-                    renderTile(Math.floor(i/props.size), i % props.size , props.changeColor, props.currentColors) 
+                    renderTile( to2d(i, props.size)[0], to2d(i, props.size)[1], props.changeColor, props.currentColors) 
                   )
             }
         </div>
@@ -66,28 +66,14 @@ function Board(props)  {
 }
 
 function WordsInputArea(props)  {
-    const defaultWords = props.words ? props.words.split(";").join("\n") : "";
+    const defaultWords = props.words ? props.words.filter(word => word).join("\n") : "";
     let [textAreaValue, setTextAreaValue] = useState(defaultWords);
     let [status, setStatus] = useState("");
 
     function update(currentValue, size) {
-        const newArr = [];
-        let arr = currentValue.split(/\b/g);
+        let arr = currentValue.match(/\S+/g) || Array(size*size).fill("");
         arr = arr.filter(word => word.trim() !== "");
-        for(let row = 0; row<size; row++) {
-            for(let col = 0; col<size; col++)
-            {
-                let index = row*size + col;
-                if(arr.length> index) {
-                    arr[index] = {...props.tiles[row][col], ...{text: arr[index]}};
-                } else {
-                    arr[index] = {...props.tiles[row][col], ...{text: ""}};
-                }
-            }
-        }
-
-        while(arr.length) newArr.push(arr.splice(0,size));
-        props.setTiles(newArr);
+        props.setWords(arr);
 
     }
 
@@ -96,7 +82,7 @@ function WordsInputArea(props)  {
         const tilesCount = props.size**2;
 
         let currentValue = event.target.value;
-        let wordCount = (currentValue.match(/\b/g) || '').length / 2;
+        let wordCount = (currentValue.match(/\S+/g) || '').length;
         if (wordCount > tilesCount) {
             return;
         }
@@ -210,17 +196,7 @@ function encodeGamePlan(plan){
     return code;
 }
 
-function getWords(tiles){
-    let words = [];
-
-    for (let i=0;i<tiles.length;i++) {
-        for (let j=0;j<tiles[i].length;j++) {
-            if(tiles[i][j] && tiles[i][j].text) {
-                words.push(tiles[i][j].text);
-            }
-
-        }
-    }
+function getWordsForUrl(words){
     return words.join(";");
 }
 
@@ -258,7 +234,13 @@ function useQueryParams() {
 function convert2dTo1d(row, col, size) {
     return row*size + col;
 }
+function to2d(i, size) {
+    return [Math.floor(i/size), i % size];
+}
 
+/**
+ * fills tiles with values from previous variables
+ */
 function handleGameplan(gameplan, unsplittedWords, colors, tiles) {
     let size=colors.length;
     let words = [];
@@ -293,9 +275,20 @@ let App = ({size=5, }) => {
     let tempTiles = createInitArray(size);
     tempTiles = initGameMap(tempTiles, size);
 
-    const { gameplan, words } = useQueryParams();
-    handleGameplan(gameplan, words, tempColors, tempTiles);
+    const { gameplan, wordsInUrl } = useQueryParams();
+    handleGameplan(gameplan, wordsInUrl, tempColors, tempTiles);
+    let tempWords = wordsInUrl;
+    if(!tempWords) {
+        tempWords = [];
+        for (let i = 0; i<size*size;i++){
+            let [x,y] = to2d(i,size);
+            tempWords.push(x+","+y);
+        }
+    } else {
+      tempWords = wordsInUrl.split(";");
+    }
 
+    let [words, setWords] = useState(tempWords);
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [tiles, setTiles] = useState(tempTiles);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
@@ -348,6 +341,7 @@ let App = ({size=5, }) => {
             <h1>Ugly codenames</h1>
             <div className='rowFlex'>
                 <Board tiles={tiles}
+                    words={words}
                     currentColors={currentColors}
                     changeColor={changeColor}
                     size={size}
@@ -363,7 +357,7 @@ let App = ({size=5, }) => {
                         </button>
                     </div>
                     <div>
-                        <a href={"?words=" + getWords(tiles) + "&gameplan=" + encodeGamePlan(tiles)} > send link to codemaster, do not click</a>
+                        <a href={"?wordsInUrl=" + getWordsForUrl(words) + "&gameplan=" + encodeGamePlan(tiles)} > send link to codemaster, do not click</a>
                     </div>
                     <div>
                         <label htmlFor="gameplan-input">
@@ -378,7 +372,7 @@ let App = ({size=5, }) => {
                         <WordsInputArea 
                             size={size}
                             tiles={tiles}
-                            setTiles={ (value) => setTiles(value) }
+                            setWords={ (value) => setWords(value) }
                             words={words}
                         />
                     </div>
