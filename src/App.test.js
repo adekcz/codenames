@@ -41,6 +41,18 @@ test('redrawing resets selected tiles', async () => {
     expect(tiles[0]).toHaveClass("tile", {exact: true});
 });
 
+test('redrawing changes link', async () => {
+    const {user} = setup(<App />)
+
+    let href = screen.getByText(/send link/i).getAttribute("href");
+    let filteredHref1  = filter(href);
+    let button = screen.getByText("redraw map");
+    await user.click(button);
+    href = screen.getByText(/send link/i).getAttribute("href");
+    let filteredHref2  = filter(href);
+    expect(filteredHref1).not.toEqual(filteredHref2);
+});
+
 test('renders grid with default size', () => {
     render(<App />);
     let tiles = screen.getAllByTestId("test-tile");
