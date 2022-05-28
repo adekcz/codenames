@@ -59,7 +59,7 @@ function Board(props)  {
               {
                   Array.from({ length: props.size**2 }, 
                 (_, i) => 
-                    renderTile( to2d(i, props.size)[0], to2d(i, props.size)[1]) 
+                    renderTile(...to2d(i, props.size)) 
                   )
             }
         </div>
