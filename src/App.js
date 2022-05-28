@@ -9,15 +9,14 @@ function textToColorCode(value) {
 }
 
 function Tile(props) {
-    let color = props.currentColors[props.x][props.y];
     return (
         <div className="square">
             <div className="content">
                 <div className="table">
                     <div 
                         data-testid="test-tile"
-                        className={"tile" + ( props.colorVisibilities[props.x*props.size + props.y] ? " " + color : "")} 
-                        onClick={(e) => props.changeColor(props.x, props.y, props.size) }>
+                        className={"tile" + ( props.visibility ? " " + props.color : "")} 
+                        onClick={(e) => props.changeColor() }>
                         {props.word}
                     </div>
                 </div>
@@ -43,19 +42,15 @@ function Board(props)  {
 
         return () => window.removeEventListener("resize", updateWindowDimensions) 
 
-    }, []);;
+    });
 
-    function renderTile(row, col, changeColor, currentColors) {
+    function renderTile(row, col) {
         return ( <Tile
             key={row + " " + col}
-            x={row}
-            y={col}
-            size={props.size}
-            currentColors={currentColors}
-            colorVisibilities={props.colorVisibilities}
+            color={props.currentColors[row][col]}
+            visibility={props.colorVisibilities[row*props.size + col]}
             word={props.words[row*props.size+col]} 
-            tileType={props.tiles[row][col].tileType} 
-            changeColor={changeColor}
+            changeColor={() => props.changeColor(row, col, props.size)}
         />);
     }
 
@@ -64,7 +59,7 @@ function Board(props)  {
               {
                   Array.from({ length: props.size**2 }, 
                 (_, i) => 
-                    renderTile( to2d(i, props.size)[0], to2d(i, props.size)[1], props.changeColor, props.currentColors) 
+                    renderTile( to2d(i, props.size)[0], to2d(i, props.size)[1]) 
                   )
             }
         </div>
@@ -139,18 +134,8 @@ function create2dArray(rows, cols, def=null) {
 
 }
 
-function createInitArray(size) {
-    let tilesPreparation = create2dArray(size, size);
-    for(let i = 0; i<size;i++)
-        for(let j = 0; j<size;j++)
-            tilesPreparation[i][j] = {
-                text: i+","+j
-            };
-    return tilesPreparation;
-}
-
 function createGameMap(size) {
-    let gameMap = create2dArray(size, size, {tileType: "grey", colorCode:3} );
+    let newColors = create2dArray(size, size, "grey" );
 
     let redCount = parseInt(size*size * 0.36);
     let blueCount = redCount - 1;
@@ -162,28 +147,13 @@ function createGameMap(size) {
         while (currentCount < colorsCount[colorIndex]) {
             let row=parseInt(Math.random()*size);
             let col=parseInt(Math.random()*size);
-            if(gameMap[row][col].tileType === "grey") {
-                gameMap[row][col] = {tileType: colorMap[colorIndex]};
-                gameMap[row][col].colorCode = colorIndex;
+            if(newColors[row][col] === "grey") {
+                newColors[row][col] = colorMap[colorIndex];
                 currentCount++;
             }
         }
     }
-    return gameMap;
-}
-
-function initGameMap(tiles, size){
-    let gameMap = createGameMap(size);
-    for(let row = 0; row < size; row++){
-        for(let col = 0; col < size; col++){
-            gameMap[row][col].text = tiles[row][col].text;
-        }
-    }
-    return gameMap;
-}
-
-function copyNew(oldArray) {  
-    return JSON.parse(JSON.stringify(oldArray));
+    return newColors;
 }
 
 /**
@@ -237,9 +207,6 @@ function useQueryParams() {
     });
 }
 
-function convert2dTo1d(row, col, size) {
-    return row*size + col;
-}
 function to2d(i, size) {
     return [Math.floor(i/size), i % size];
 }
@@ -247,68 +214,44 @@ function to2d(i, size) {
 /**
  * fills tiles with values from previous variables
  */
-function handleGameplan(gameplan, unsplittedWords, colors, colorsVisibilities, tiles) {
-    let size=colors.length;
-    let words = [];
-    if(unsplittedWords) {
-        words = unsplittedWords.split(";");
-    }
+function handleGameplan(inGameplan, inWords, outColors, colorsVisibilities, outWords) {
+    let size=outColors.length;
 
-    if(gameplan!==null){
-        let decodedPlan=decodeGamePlan(gameplan, tiles[0].length);
+    if(inGameplan!==null){
+        colorsVisibilities.fill(true);
+        let decodedPlan=decodeGamePlan(inGameplan, outColors.length);
         for(let row = 0; row<size; row++) {
             for(let col = 0; col<size; col++)
             {
-                colors[row][col] = colorMap[decodedPlan[row*size+col]];
-                tiles[row][col].tileType = colors[row][col];
-                tiles[row][col].colorCode = decodedPlan[row*size+col];
-                colorsVisibilities[row*size+col] = true;
-                if (words.length > convert2dTo1d(row, col, size)) {
-                    if(words[convert2dTo1d(row, col, size)]) {
-                        tiles[row][col].text = words[convert2dTo1d(row, col, size)];
-                    } else {
-                        tiles[row][col].text = "" ;
-                    }
-                } else {
-                        tiles[row][col].text = "" ;
-                }
+                outColors[row][col] = colorMap[decodedPlan[row*size+col]];
             }
         }
+    }
+    if(!inWords) {
+        for (let i = 0; i<size*size;i++){
+            let [x,y] = to2d(i,size);
+            outWords.push(x+","+y);
+        }
+    } else {
+      outWords.push(...inWords.split(";"));
     }
 }
 
 let App = ({size=5, }) => {
-    let tempColors = create2dArray(size,size)
-    let tempTiles = createInitArray(size);
+    let tempColors = createGameMap(size);
     let tempColorVisibilities = Array(size*size).fill(false);
-    tempTiles = initGameMap(tempTiles, size);
+    let tempWords = [];
 
     const { gameplan, wordsInUrl } = useQueryParams();
-    handleGameplan(gameplan, wordsInUrl, tempColors, tempColorVisibilities, tempTiles);
-    for(let i = 0; i<tempTiles.length;i++){
-        for(let j = 0; j<tempTiles[i].length;j++){
-            tempColors[i][j] = tempTiles[i][j].tileType;
-        }
-    }
-    let tempWords = wordsInUrl;
-    if(!tempWords) {
-        tempWords = [];
-        for (let i = 0; i<size*size;i++){
-            let [x,y] = to2d(i,size);
-            tempWords.push(x+","+y);
-        }
-    } else {
-      tempWords = wordsInUrl.split(";");
-    }
+    handleGameplan(gameplan, wordsInUrl, tempColors, tempColorVisibilities, tempWords);
 
     let [words, setWords] = useState(tempWords);
     let [colorVisibilities, setColorVisibility] = useState(tempColorVisibilities);
     let [currentColors, setCurrentColors] = useState(tempColors);
-    let [tiles, setTiles] = useState(tempTiles);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
     function changeColor(x,y, size){
-        let copy = copyNew(colorVisibilities);
+        let copy = [...colorVisibilities];
         copy[x*size + y] = true;
         setColorVisibility(copy);
     }
@@ -353,7 +296,7 @@ let App = ({size=5, }) => {
         <div>
             <h1>Ugly codenames</h1>
             <div className='rowFlex'>
-                <Board tiles={tiles}
+                <Board 
                     words={words}
                     currentColors={currentColors}
                     colorVisibilities={colorVisibilities}
@@ -363,7 +306,7 @@ let App = ({size=5, }) => {
                 <div className='columnFlex'>
                     <div>
                         <button className="redraw" onClick={() => {
-                            setCurrentColors(createGameMap(size).map(row => row.map(tile => tile.tileType)));
+                            setCurrentColors(createGameMap(size));
                             setColorVisibility(Array(size*size).fill(false));
                         }
                             }>
@@ -385,7 +328,6 @@ let App = ({size=5, }) => {
                     <div>
                         <WordsInputArea 
                             size={size}
-                            tiles={tiles}
                             setWords={ (value) => setWords(value) }
                             words={words}
                         />
