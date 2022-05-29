@@ -103,7 +103,7 @@ function WordsInputArea(props)  {
     return (
         <div className="wordInputWrapper">
             <div>
-                <label htmlFor="word-input">Enter value:</label>
+                <label htmlFor="word-input">Enter 25 words:</label>
             </div>
             <textarea id="word-input"
                 value={textAreaValue}

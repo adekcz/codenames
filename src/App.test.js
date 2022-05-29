@@ -70,7 +70,7 @@ test('entering word into text area changes tile text', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     expect(tiles[0]).toHaveTextContent("0,0");
-    let textarea = screen.getByLabelText("Enter value:");
+    let textarea = screen.getByLabelText("Enter 25 words:");
     await user.type(textarea, "ahoj");
     expect(tiles[0]).toHaveTextContent("0,0");
     await user.clear(textarea);
@@ -87,7 +87,7 @@ test('entering word into text area changes tile text', async () => {
 test('after size*size words you cannot add more lines', async () => {
     const {user} = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
-    let textarea = screen.getByLabelText("Enter value:");
+    let textarea = screen.getByLabelText("Enter 25 words:");
     await user.clear(textarea);
     for(let i = 0; i<tiles.length;i++){
         await user.type(textarea, "a{Enter}");
@@ -160,7 +160,7 @@ test('codemaster link works after entering words', async () => {
     let filteredCode = filter(gameplanCode);
     changeJSDOMURL({ gameplan: gameplanCode});
     const {user} = setup(<App />)
-    let textarea = screen.getByLabelText("Enter value:");
+    let textarea = screen.getByLabelText("Enter 25 words:");
     await user.type(textarea, "ahoj");
     let href = screen.getByText(/send link/i).getAttribute("href");
     let filteredHref  = filter(href);
