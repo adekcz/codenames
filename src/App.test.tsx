@@ -5,7 +5,7 @@ import { unmountComponentAtNode } from "react-dom";
 import { ReactElement } from 'react';
 
 
-let container : HTMLElement | null;
+let container: HTMLElement | null;
 const linkText = "Secret codemaster link.";
 
 beforeEach(() => {
@@ -29,30 +29,30 @@ test('renders redraw button', () => {
 });
 
 test('clicking on tile changes it\'s color', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
-    expect(tiles[0]).not.toHaveClass("tile", {exact: true});
+    expect(tiles[0]).not.toHaveClass("tile", { exact: true });
 });
 
 test('redrawing resets selected tiles', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     let button = screen.getByText("redraw map");
     await user.click(button);
-    expect(tiles[0]).toHaveClass("tile", {exact: true});
+    expect(tiles[0]).toHaveClass("tile", { exact: true });
 });
 
 test('redrawing changes link', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
 
     let href = screen.getByText(linkText).getAttribute("href");
-    let filteredHref1  = filter(href);
+    let filteredHref1 = filter(href);
     let button = screen.getByText("redraw map");
     await user.click(button);
     href = screen.getByText(linkText).getAttribute("href");
-    let filteredHref2  = filter(href);
+    let filteredHref2 = filter(href);
     expect(filteredHref1).not.toEqual(filteredHref2);
 });
 
@@ -63,14 +63,14 @@ test('renders grid with default size', () => {
 });
 
 test('renders grid with custom size of 16', () => {
-    render(<App size={4}/>);
+    render(<App size={4} />);
     let tiles = screen.getAllByTestId("test-tile");
     expect(tiles).toHaveLength(16);
 });
 
 
 test('entering word into text area changes tile text', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     expect(tiles[0]).toHaveTextContent("0,0");
     let textarea = screen.getByLabelText("Enter 25 words:");
@@ -88,11 +88,11 @@ test('entering word into text area changes tile text', async () => {
 })
 
 test('after size*size words you cannot add more lines', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     let textarea = screen.getByLabelText("Enter 25 words:");
     await user.clear(textarea);
-    for(let i = 0; i<tiles.length;i++){
+    for (let i = 0; i < tiles.length; i++) {
         await user.type(textarea, "a{Enter}");
     }
     expect(tiles[0]).toHaveTextContent("a");
@@ -105,15 +105,15 @@ test('after size*size words you cannot add more lines', async () => {
 })
 
 test('entering gameplan via input', async () => {
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     let tile = tiles[8];
-    expect(tile).toHaveClass("tile", {exact: true});
+    expect(tile).toHaveClass("tile", { exact: true });
     let textarea = screen.getByLabelText("Set gameplan:");
     await user.type(textarea, "8083011601381313707308281061360073910");
     await user.click(tile);
     expect(tile).toHaveTextContent("1,3");
-    expect(tile).toHaveClass("tile blue", {exact: true});
+    expect(tile).toHaveClass("tile blue", { exact: true });
     let label = screen.getByTestId("gameplan-label");
     expect(label).toHaveTextContent("change was succesful");
     await user.clear(textarea);
@@ -121,28 +121,28 @@ test('entering gameplan via input', async () => {
     await user.type(textarea, "36190151015318203016008330138390081");
     tile = tiles[10];
     await user.click(tile);
-    expect(tile).toHaveClass("tile red", {exact: true});
+    expect(tile).toHaveClass("tile red", { exact: true });
 })
 
 test('using URL parameter', async () => {
     changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910" });
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     await user.click(tiles[1]);
     await user.click(tiles[2]);
-    expect(tiles[0]).toHaveClass("tile red", {exact: true});
-    expect(tiles[1]).toHaveClass("tile red", {exact: true});
-    expect(tiles[2]).toHaveClass("tile blue", {exact: true});
-    expect(tiles[3]).toHaveClass("tile dark", {exact: true});
-    expect(tiles[5]).toHaveClass("tile grey", {exact: true});
+    expect(tiles[0]).toHaveClass("tile red", { exact: true });
+    expect(tiles[1]).toHaveClass("tile red", { exact: true });
+    expect(tiles[2]).toHaveClass("tile blue", { exact: true });
+    expect(tiles[3]).toHaveClass("tile dark", { exact: true });
+    expect(tiles[5]).toHaveClass("tile grey", { exact: true });
 });
 
-function filter(code: string | null){
-    if(code === null) return "";
+function filter(code: string | null) {
+    if (code === null) return "";
     let filtered = "";
-    for (let c of code.slice(code.indexOf("gameplan")+1)) {
-        if(parseInt(c) >= 0 && parseInt(c) <=3) {
+    for (let c of code.slice(code.indexOf("gameplan") + 1)) {
+        if (parseInt(c) >= 0 && parseInt(c) <= 3) {
             filtered += c;
         }
     }
@@ -152,40 +152,41 @@ function filter(code: string | null){
 test('codemaster link works', () => {
     const gameplanCode = '8083011601381313707308281061360073910';
     let filteredCode = filter(gameplanCode);
-    changeJSDOMURL({ gameplan: gameplanCode});
+    changeJSDOMURL({ gameplan: gameplanCode });
     render(<App />);
     let href = screen.getByText(linkText).getAttribute("href");
-    let filteredHref  = filter(href);
+    let filteredHref = filter(href);
     expect(filteredHref).toEqual(filteredCode);
 });
 
 test('codemaster link works after entering words', async () => {
     const gameplanCode = '8083011601381313707308281061360073910';
     let filteredCode = filter(gameplanCode);
-    changeJSDOMURL({ gameplan: gameplanCode});
-    const {user} = setup(<App />)
+    changeJSDOMURL({ gameplan: gameplanCode });
+    const { user } = setup(<App />)
     let textarea = screen.getByLabelText("Enter 25 words:");
     await user.type(textarea, "ahoj");
     let href = screen.getByText(linkText).getAttribute("href");
-    let filteredHref  = filter(href);
+    let filteredHref = filter(href);
     expect(filteredHref).toEqual(filteredCode);
     expect(href).toContain("ahoj");
 });
 
 test('codemaster link works with entered words', async () => {
-    changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910",
-            wordsInUrl: "word1;word2"
+    changeJSDOMURL({
+        gameplan: "8083011601381313707308281061360073910",
+        wordsInUrl: "word1;word2"
     });
-    const {user} = setup(<App />)
+    const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
     await user.click(tiles[0]);
     await user.click(tiles[1]);
     await user.click(tiles[2]);
-    expect(tiles[0]).toHaveClass("tile red", {exact: true});
-    expect(tiles[1]).toHaveClass("tile red", {exact: true});
-    expect(tiles[2]).toHaveClass("tile blue", {exact: true});
-    expect(tiles[3]).toHaveClass("tile dark", {exact: true});
-    expect(tiles[5]).toHaveClass("tile grey", {exact: true});
+    expect(tiles[0]).toHaveClass("tile red", { exact: true });
+    expect(tiles[1]).toHaveClass("tile red", { exact: true });
+    expect(tiles[2]).toHaveClass("tile blue", { exact: true });
+    expect(tiles[3]).toHaveClass("tile dark", { exact: true });
+    expect(tiles[5]).toHaveClass("tile grey", { exact: true });
     expect(tiles[0]).toHaveTextContent("word1");
     expect(tiles[1]).toHaveTextContent("word2");
     expect(tiles[2]).toHaveTextContent("");
@@ -198,7 +199,7 @@ function setup(jsx: ReactElement) {
     }
 }
 
-function changeJSDOMURL(search: {gameplan: string; wordsInUrl?: string}, url = "https://www.example.com/") {
+function changeJSDOMURL(search: { gameplan: string; wordsInUrl?: string }, url = "https://www.example.com/") {
     const newURL = new URL(url);
     newURL.search = new URLSearchParams(search).toString();
     const href = `${window.origin}${newURL.pathname}${newURL.search}${newURL.hash}`;

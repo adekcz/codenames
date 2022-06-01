@@ -58,26 +58,28 @@ body {
  * https://stackoverflow.com/questions/20456694/grid-of-responsive-squares
  */
 .square {
-    float:left;
+    float: left;
     position: relative;
     width: 19%;
-    padding-bottom : 19%; /* = width for a 1:1 aspect ratio */
-    margin:0%;
-    overflow:hidden;
+    padding-bottom: 19%;
+    /* = width for a 1:1 aspect ratio */
+    margin: 0%;
+    overflow: hidden;
 }
 
 .content {
-    position:absolute;
-    height:100%; 
-    width:100%; 
+    position: absolute;
+    height: 100%;
+    width: 100%;
     padding: 0%;
     text-align: center;
 
 }
-.table{
-    display:table;
-    width:100%;
-    height:100%;
+
+.table {
+    display: table;
+    width: 100%;
+    height: 100%;
 }
 
 .tile {
@@ -87,8 +89,8 @@ body {
     font-weight: bold;
     line-height: 34px;
     text-align: center;
-    display:table-cell;
-    vertical-align:middle;
+    display: table-cell;
+    vertical-align: middle;
     overflow-wrap: break-word;
     word-break: break-all;
 }

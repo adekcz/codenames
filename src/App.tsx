@@ -1,20 +1,20 @@
-import React, {useState, useEffect, useContext} from 'react';
-import  {ChangeEvent} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { ChangeEvent } from 'react';
 import './App.css';
 import './images/rip.png';
 
 //let colorMap = {"0":"red", "1":"blue", "2":"dark", "3":"grey"};
 const colorMap = new Map<string, string>([
-        ["0", "red"],
-        ["1", "blue"],
-        ["2", "dark"],
-        ["3", "grey"]
-    ]);
+    ["0", "red"],
+    ["1", "blue"],
+    ["2", "dark"],
+    ["3", "grey"]
+]);
 const sizeContext = React.createContext(5);
 
 function textToColorCode(value: string) {
     for (const [key, currentValue] of colorMap.entries()) {
-        if(value === currentValue) {
+        if (value === currentValue) {
             return key;
         }
     }
@@ -33,10 +33,10 @@ function Tile(props: TileProps) {
         <div className="square">
             <div className="content">
                 <div className="table">
-                    <div 
+                    <div
                         data-testid="test-tile"
-                        className={"tile" + ( props.visibility ? " " + props.color : "")} 
-                        onClick={(e) => props.changeColor() }>
+                        className={"tile" + (props.visibility ? " " + props.color : "")}
+                        onClick={(e) => props.changeColor()}>
                         {props.word}
                     </div>
                 </div>
@@ -49,16 +49,16 @@ interface BoardProps {
     currentColors: string[][];
     words: string[];
     colorVisibilities: boolean[];
-    changeColor: (row: number, col:number, size: number) => void;
+    changeColor: (row: number, col: number, size: number) => void;
 }
-function Board(props: BoardProps)  {
+function Board(props: BoardProps) {
     function getCurrentSize() {
-        const smallerDimension =  window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
+        const smallerDimension = window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
         return smallerDimension * 0.95;
     }
 
     const [boardSize, setBoardSize] = useState(getCurrentSize());
-    const size = useContext(sizeContext);  
+    const size = useContext(sizeContext);
     useEffect(() => {
         const updateWindowDimensions = () => {
             setBoardSize(getCurrentSize());
@@ -67,26 +67,26 @@ function Board(props: BoardProps)  {
 
         window.addEventListener("resize", updateWindowDimensions);
 
-        return () => window.removeEventListener("resize", updateWindowDimensions) 
+        return () => window.removeEventListener("resize", updateWindowDimensions)
 
     });
 
     function renderTile(row: number, col: number) {
-        return ( <Tile
+        return (<Tile
             key={row + " " + col}
             color={props.currentColors[row][col]}
-            visibility={props.colorVisibilities[row*size + col]}
-            word={props.words[row*size+col]} 
+            visibility={props.colorVisibilities[row * size + col]}
+            word={props.words[row * size + col]}
             changeColor={() => props.changeColor(row, col, size)}
         />);
     }
 
     return (
-        <div className="board" style={{width: boardSize, height: boardSize}} >
+        <div className="board" style={{ width: boardSize, height: boardSize }} >
             {
-                Array.from({ length: size**2 }, 
-                    (_, i) => 
-                    renderTile(...to2d(i, size)) 
+                Array.from({ length: size ** 2 },
+                    (_, i) =>
+                        renderTile(...to2d(i, size))
                 )
             }
         </div>
@@ -97,21 +97,21 @@ interface WordsInputProps {
     words: string[];
     setWords: (arr: string[]) => void;
 }
-function WordsInputArea(props: WordsInputProps)  {
+function WordsInputArea(props: WordsInputProps) {
     const defaultWords = props.words ? props.words.filter(word => word).join("\n") : "";
     let [textAreaValue, setTextAreaValue] = useState(defaultWords);
     let [status, setStatus] = useState("");
-    const size = useContext(sizeContext);  
+    const size = useContext(sizeContext);
 
     function update(currentValue: string, size: number) {
-        let arr = currentValue.match(/\S+/g) || Array(size*size).fill("");
+        let arr = currentValue.match(/\S+/g) || Array(size * size).fill("");
         arr = arr.filter(word => word.trim() !== "");
         props.setWords(arr);
 
     }
 
     function handleChange(event: ChangeEvent<HTMLTextAreaElement>) {
-        const tilesCount = size**2;
+        const tilesCount = size ** 2;
 
         let currentValue = event.target.value;
         let wordCount = (currentValue.match(/\S+/g) || '').length;
@@ -121,7 +121,7 @@ function WordsInputArea(props: WordsInputProps)  {
         update(currentValue, size);
         setTextAreaValue(currentValue);
         if (wordCount < tilesCount) {
-            setStatus("you need " + (tilesCount-wordCount) + " more words");
+            setStatus("you need " + (tilesCount - wordCount) + " more words");
         }
         if (wordCount === tilesCount) {
             setStatus("Good job. Words set up! (you cannot add new words anymore, you can edit though)");
@@ -137,7 +137,7 @@ function WordsInputArea(props: WordsInputProps)  {
             <textarea id="word-input"
                 value={textAreaValue}
                 onChange={handleChange}
-                rows={size**2}
+                rows={size ** 2}
                 cols={15}
             />
             <p data-testid="wordInputStatus">{status}</p>
@@ -145,9 +145,9 @@ function WordsInputArea(props: WordsInputProps)  {
     );
 }
 
-function create2dArray(rows: number, cols: number, def:string|null=null) {
+function create2dArray(rows: number, cols: number, def: string | null = null) {
     let array = Array(rows).fill(null);
-    for (let row = 0; row<rows; row++) {
+    for (let row = 0; row < rows; row++) {
         array[row] = Array(cols).fill(def);
     }
     return array;
@@ -155,19 +155,19 @@ function create2dArray(rows: number, cols: number, def:string|null=null) {
 }
 
 function createGameMap(size: number) {
-    let newColors = create2dArray(size, size, "grey" );
+    let newColors = create2dArray(size, size, "grey");
 
-    let redCount = Math.trunc(size*size * 0.36);
+    let redCount = Math.trunc(size * size * 0.36);
     let blueCount = redCount - 1;
     let blackCount = 1;
 
     let colorsCount = [redCount, blueCount, blackCount];
-    for (let colorIndex = 0; colorIndex<colorsCount.length; colorIndex++) {
+    for (let colorIndex = 0; colorIndex < colorsCount.length; colorIndex++) {
         let currentCount = 0;
         while (currentCount < colorsCount[colorIndex]) {
-            let row=Math.trunc(Math.random()*size);
-            let col=Math.trunc(Math.random()*size);
-            if(newColors[row][col] === "grey") {
+            let row = Math.trunc(Math.random() * size);
+            let col = Math.trunc(Math.random() * size);
+            if (newColors[row][col] === "grey") {
                 newColors[row][col] = colorMap.get(colorIndex.toString());
                 currentCount++;
             }
@@ -179,35 +179,35 @@ function createGameMap(size: number) {
 /**
  * scrambles game map plus adds random numbers out of range;
  */
-function encodeGamePlan(plan: string[][]){
-    let code="";
-    for (let i=0;i<plan.length;i++) {
-        for (let j=0;j<plan[i].length;j++) {
+function encodeGamePlan(plan: string[][]) {
+    let code = "";
+    for (let i = 0; i < plan.length; i++) {
+        for (let j = 0; j < plan[i].length; j++) {
             while (Math.random() > 0.3) {
-                code+= Math.floor(Math.random()*5+5);
+                code += Math.floor(Math.random() * 5 + 5);
             }
-            code+=textToColorCode(plan[j][i]);
+            code += textToColorCode(plan[j][i]);
         }
     }
     return code;
 }
 
-function getWordsForUrl(words: string[]){
+function getWordsForUrl(words: string[]) {
     return words.join(";");
 }
 
-function decodeGamePlan(encoded: string, size: number){
+function decodeGamePlan(encoded: string, size: number) {
     let filtered = ""
     for (let c of encoded) {
-        if(parseInt(c) >= 0 && parseInt(c) <=3) {
+        if (parseInt(c) >= 0 && parseInt(c) <= 3) {
             filtered += c;
         }
     }
 
-    let decoded = new Array(size*size);
-    for(let i=0;i<size;i++){
-        for(let j=0;j<size;j++){
-            decoded[j*size + i] = filtered[i*size+j];
+    let decoded = new Array(size * size);
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            decoded[j * size + i] = filtered[i * size + j];
         }
     }
     return decoded;
@@ -215,14 +215,14 @@ function decodeGamePlan(encoded: string, size: number){
 }
 
 //const { gameplan, ...unknown } = useQueryParams();
-function useQueryParams() : any {
+function useQueryParams(): any {
     const params = new URLSearchParams(
         window ? window.location.search : {}
     );
 
     return new Proxy(params, {
         get(target, prop) {
-            if ( typeof prop === "string") {
+            if (typeof prop === "string") {
                 return target.has(prop) ? target.get(prop) : null;
             }
             return null;
@@ -230,40 +230,39 @@ function useQueryParams() : any {
     });
 }
 
-function to2d(i: number, size: number): [number, number]{
-    return [Math.floor(i/size), i % size];
+function to2d(i: number, size: number): [number, number] {
+    return [Math.floor(i / size), i % size];
 }
 
 /**
  * fills tiles with values from previous variables
  */
 function handleGameplan(inGameplan: string, inWords: string, outColors: string[][], colorsVisibilities: boolean[], outWords: string[]) {
-    let size=outColors.length;
+    let size = outColors.length;
 
-    if(inGameplan!==null){
+    if (inGameplan !== null) {
         colorsVisibilities.fill(true);
-        let decodedPlan=decodeGamePlan(inGameplan, outColors.length);
-        for(let row = 0; row<size; row++) {
-            for(let col = 0; col<size; col++)
-            {
-                outColors[row][col] = colorMap.get(decodedPlan[row*size+col])  || "grey";
+        let decodedPlan = decodeGamePlan(inGameplan, outColors.length);
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col < size; col++) {
+                outColors[row][col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
             }
         }
     }
-    if(!inWords) {
-        for (let i = 0; i<size*size;i++){
-            let [x,y] = to2d(i,size);
-            outWords.push(x+","+y);
+    if (!inWords) {
+        for (let i = 0; i < size * size; i++) {
+            let [x, y] = to2d(i, size);
+            outWords.push(x + "," + y);
         }
     } else {
         outWords.push(...inWords.split(";"));
     }
 }
 
-let App = ({size=5, }) => {
+let App = ({ size = 5, }) => {
     let tempColors = createGameMap(size);
-    let tempColorVisibilities = Array(size*size).fill(false);
-    let tempWords : string[] = [];
+    let tempColorVisibilities = Array(size * size).fill(false);
+    let tempWords: string[] = [];
 
     const { gameplan, wordsInUrl } = useQueryParams();
     handleGameplan(gameplan, wordsInUrl, tempColors, tempColorVisibilities, tempWords);
@@ -273,42 +272,42 @@ let App = ({size=5, }) => {
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
-    function changeColor(x: number, y: number, size: number){
+    function changeColor(x: number, y: number, size: number) {
         let copy = [...colorVisibilities];
-        copy[x*size + y] = true;
+        copy[x * size + y] = true;
         setColorVisibility(copy);
     }
 
     function validateGameplan(code: string, size: number) {
         let count = 0;
-        for(let c of code){
-            if(parseInt(c) >=0 && parseInt(c) <=3) {
+        for (let c of code) {
+            if (parseInt(c) >= 0 && parseInt(c) <= 3) {
                 count++;
             }
         }
-        return count === size*size;
+        return count === size * size;
     }
 
-    function handleChangeColors(event: ChangeEvent<HTMLInputElement>): void{
+    function handleChangeColors(event: ChangeEvent<HTMLInputElement>): void {
         setLabelForSetGameMapInput("processing");
-        let value = event.target.value;  
-        if(!validateGameplan(value, size)) {
+        let value = event.target.value;
+        if (!validateGameplan(value, size)) {
             setLabelForSetGameMapInput("invalid length");
             return;
         }
-        setColorVisibility(Array(size*size).fill(false));
+        setColorVisibility(Array(size * size).fill(false));
         let newColors = create2dArray(size, size);
 
-        let decodedPlan=decodeGamePlan(value, size);
-        for(let row = 0; row<size; row++) {
-            for(let col = 0; col<size; col++) {
-                newColors[row][col] = colorMap.get(decodedPlan[row*size+col]) || "grey";
+        let decodedPlan = decodeGamePlan(value, size);
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col < size; col++) {
+                newColors[row][col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
             }
         }
 
         setCurrentColors(newColors);
 
-        if(labelForSetGameMapInput === "change was succesful"){
+        if (labelForSetGameMapInput === "change was succesful") {
             setLabelForSetGameMapInput("new map was loaded");
         } else {
             setLabelForSetGameMapInput("change was succesful");
@@ -320,47 +319,47 @@ let App = ({size=5, }) => {
             <div>
                 <h1>Ugly codenames</h1>
                 <div className='rowFlex'>
-                    <Board 
+                    <Board
                         words={words}
                         currentColors={currentColors}
                         colorVisibilities={colorVisibilities}
                         changeColor={changeColor}
                     />
                     <div className='columnFlex'>
-                    <div>
-                        <h2>Main controls</h2>
-                        <h3>1. Enter words</h3>
-                            <WordsInputArea 
-                                setWords={ (value) => setWords(value) }
+                        <div>
+                            <h2>Main controls</h2>
+                            <h3>1. Enter words</h3>
+                            <WordsInputArea
+                                setWords={(value) => setWords(value)}
                                 words={words}
                             />
                         </div>
-                    <div>
-                        <h3>2. send link to codemaster</h3>
+                        <div>
+                            <h3>2. send link to codemaster</h3>
                             <a href={"?wordsInUrl=" + getWordsForUrl(words) + "&gameplan=" + encodeGamePlan(currentColors)} >Secret codemaster link.</a>
                         </div>
-                <div>
-                    <h2>Other controls</h2>
-              
                         <div>
-                            <button className="redraw" onClick={() => {
-                                setCurrentColors(createGameMap(size));
-                                setColorVisibility(Array(size*size).fill(false));
-                            }
+                            <h2>Other controls</h2>
+
+                            <div>
+                                <button className="redraw" onClick={() => {
+                                    setCurrentColors(createGameMap(size));
+                                    setColorVisibility(Array(size * size).fill(false));
+                                }
                                 }>
-                                redraw map
-                            </button>
-                        </div>
-                        
-                        <div>
-                            <label htmlFor="gameplan-input">
-                                Set gameplan:
-                                <input id="gameplan-input" type="text" onChange={handleChangeColors} />
-                            </label>
-                            <label id="gameplan-input-message" data-testid="gameplan-label">
-                                {labelForSetGameMapInput}
-                            </label>
-                        </div>
+                                    redraw map
+                                </button>
+                            </div>
+
+                            <div>
+                                <label htmlFor="gameplan-input">
+                                    Set gameplan:
+                                    <input id="gameplan-input" type="text" onChange={handleChangeColors} />
+                                </label>
+                                <label id="gameplan-input-message" data-testid="gameplan-label">
+                                    {labelForSetGameMapInput}
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -370,7 +369,7 @@ let App = ({size=5, }) => {
                     Red team always starts.
                 </p>
                 <p>
-                    Use <i>right click -&gt; copy link address</i> to send reveald game plan to codemasters. Do not click on it ;) 
+                    Use <i>right click -&gt; copy link address</i> to send reveald game plan to codemasters. Do not click on it ;)
                 </p>
                 <p>
                     Enter 25 words into big text area.
@@ -389,7 +388,7 @@ let App = ({size=5, }) => {
                 </p>
             </div>
         </sizeContext.Provider>
-);
+    );
 }
 
 export default App;

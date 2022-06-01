@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
-    <App size={5}/>
+    <App size={5} />
   </React.StrictMode>
 );
 
