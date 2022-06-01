@@ -15,4 +15,4 @@ hosted: http://michalkeda.com/uglycodenames
 
 
 ## disclaimer
-This was written as a learning exercise for reactjs, typescript and some other front-end technologies.
+This was written as a learning exercise for reactjs, typescript and some other front-end technologies. I do not fear to fail to meet any expectations.
