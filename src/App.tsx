@@ -327,6 +327,21 @@ let App = ({size=5, }) => {
                         changeColor={changeColor}
                     />
                     <div className='columnFlex'>
+                    <div>
+                        <h2>Main controls</h2>
+                        <h3>1. Enter words</h3>
+                            <WordsInputArea 
+                                setWords={ (value) => setWords(value) }
+                                words={words}
+                            />
+                        </div>
+                    <div>
+                        <h3>2. send link to codemaster</h3>
+                            <a href={"?wordsInUrl=" + getWordsForUrl(words) + "&gameplan=" + encodeGamePlan(currentColors)} >Secret codemaster link.</a>
+                        </div>
+                <div>
+                    <h2>Other controls</h2>
+              
                         <div>
                             <button className="redraw" onClick={() => {
                                 setCurrentColors(createGameMap(size));
@@ -336,9 +351,7 @@ let App = ({size=5, }) => {
                                 redraw map
                             </button>
                         </div>
-                        <div>
-                            <a href={"?wordsInUrl=" + getWordsForUrl(words) + "&gameplan=" + encodeGamePlan(currentColors)} > send link to codemaster, do not click</a>
-                        </div>
+                        
                         <div>
                             <label htmlFor="gameplan-input">
                                 Set gameplan:
@@ -348,11 +361,6 @@ let App = ({size=5, }) => {
                                 {labelForSetGameMapInput}
                             </label>
                         </div>
-                        <div>
-                            <WordsInputArea 
-                                setWords={ (value) => setWords(value) }
-                                words={words}
-                            />
                         </div>
                     </div>
                 </div>

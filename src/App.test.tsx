@@ -6,6 +6,8 @@ import { ReactElement } from 'react';
 
 
 let container : HTMLElement | null;
+const linkText = "Secret codemaster link.";
+
 beforeEach(() => {
     // setup a DOM element as a render target
     container = document.createElement("div");
@@ -45,11 +47,11 @@ test('redrawing resets selected tiles', async () => {
 test('redrawing changes link', async () => {
     const {user} = setup(<App />)
 
-    let href = screen.getByText(/send link/i).getAttribute("href");
+    let href = screen.getByText(linkText).getAttribute("href");
     let filteredHref1  = filter(href);
     let button = screen.getByText("redraw map");
     await user.click(button);
-    href = screen.getByText(/send link/i).getAttribute("href");
+    href = screen.getByText(linkText).getAttribute("href");
     let filteredHref2  = filter(href);
     expect(filteredHref1).not.toEqual(filteredHref2);
 });
@@ -152,7 +154,7 @@ test('codemaster link works', () => {
     let filteredCode = filter(gameplanCode);
     changeJSDOMURL({ gameplan: gameplanCode});
     render(<App />);
-    let href = screen.getByText(/send link/i).getAttribute("href");
+    let href = screen.getByText(linkText).getAttribute("href");
     let filteredHref  = filter(href);
     expect(filteredHref).toEqual(filteredCode);
 });
@@ -164,7 +166,7 @@ test('codemaster link works after entering words', async () => {
     const {user} = setup(<App />)
     let textarea = screen.getByLabelText("Enter 25 words:");
     await user.type(textarea, "ahoj");
-    let href = screen.getByText(/send link/i).getAttribute("href");
+    let href = screen.getByText(linkText).getAttribute("href");
     let filteredHref  = filter(href);
     expect(filteredHref).toEqual(filteredCode);
     expect(href).toContain("ahoj");
