@@ -1,10 +1,10 @@
 import React, {useState, useEffect, useContext} from 'react';
-import  {ChangeEvent, ChangeEventHandler} from 'react';
+import  {ChangeEvent} from 'react';
 import './App.css';
 import './images/rip.png';
 
 //let colorMap = {"0":"red", "1":"blue", "2":"dark", "3":"grey"};
-let colorMap = new Map<string, string>([
+const colorMap = new Map<string, string>([
         ["0", "red"],
         ["1", "blue"],
         ["2", "dark"],
@@ -13,7 +13,12 @@ let colorMap = new Map<string, string>([
 const sizeContext = React.createContext(5);
 
 function textToColorCode(value: string) {
-    return [...colorMap].find(([key, val]) => val == value)[0]
+    for (const [key, currentValue] of colorMap.entries()) {
+        if(value === currentValue) {
+            return key;
+        }
+    }
+    return 3;
 }
 
 interface TileProps {
@@ -217,7 +222,10 @@ function useQueryParams() : any {
 
     return new Proxy(params, {
         get(target, prop) {
-            return target.has(prop) ? target.get(prop as keyof typeof target) : null;
+            if ( typeof prop === "string") {
+                return target.has(prop) ? target.get(prop) : null;
+            }
+            return null;
         },
     });
 }
