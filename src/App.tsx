@@ -366,6 +366,11 @@ let App = ({size=5, }) => {
                 <p>
                     You can use code from URL sent to codemaster to regenerate given game plan.
                 </p>
+                <p>
+                    <a href="https://github.com/adekcz/codenames">
+                        https://github.com/adekcz/codenames
+                    </a>
+                </p>
             </div>
         </sizeContext.Provider>
 );
