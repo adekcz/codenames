@@ -16,11 +16,11 @@ body {
 }
 
 .tile.red {
-    background: red;
+    background: crimson;
 }
 
 .tile.blue {
-    background: blue;
+    background: dodgerblue;
 }
 
 .tile.dark {
@@ -34,7 +34,7 @@ body {
 }
 
 .tile.grey {
-    background: grey;
+    background: lightgrey;
 }
 
 .columnFlex {
