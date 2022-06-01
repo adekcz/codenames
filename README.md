@@ -7,8 +7,9 @@ Minimalistic implementation of codenames. You can write your own words and enjoy
 ## Instructions
 1. write your own words
 2. share main screen with all players
-3. send secret link with current gameplan to codemasters.
-4. more detailed instructions at the bottom of the screen
+3. send secret link with current gameplan to codemasters
+4. red team always starts
+5. more detailed instructions at the bottom of the screen
 
 hosted: http://michalkeda.com/uglycodenames
 
