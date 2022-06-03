@@ -46,7 +46,7 @@ function Tile(props: TileProps) {
 }
 
 interface BoardProps {
-    currentColors: string[][];
+    currentColors: string[];
     words: string[];
     colorVisibilities: boolean[];
     changeColor: (row: number, col: number, size: number) => void;
@@ -74,7 +74,7 @@ function Board(props: BoardProps) {
     function renderTile(row: number, col: number) {
         return (<Tile
             key={row + " " + col}
-            color={props.currentColors[row][col]}
+            color={props.currentColors[row * size + col]}
             visibility={props.colorVisibilities[row * size + col]}
             word={props.words[row * size + col]}
             changeColor={() => props.changeColor(row, col, size)}
@@ -145,17 +145,13 @@ function WordsInputArea(props: WordsInputProps) {
     );
 }
 
-function create2dArray(rows: number, cols: number, def: string | null = null) {
-    let array = Array(rows).fill(null);
-    for (let row = 0; row < rows; row++) {
-        array[row] = Array(cols).fill(def);
-    }
+function create1dArray(rows: number, cols: number, def: string | null = null): string[] {
+    let array = Array(rows * cols).fill(def);
     return array;
-
 }
 
 function createGameMap(size: number) {
-    let newColors = create2dArray(size, size, "grey");
+    let newColors = create1dArray(size, size, "grey");
 
     let redCount = Math.trunc(size * size * 0.36);
     let blueCount = redCount - 1;
@@ -167,8 +163,11 @@ function createGameMap(size: number) {
         while (currentCount < colorsCount[colorIndex]) {
             let row = Math.trunc(Math.random() * size);
             let col = Math.trunc(Math.random() * size);
-            if (newColors[row][col] === "grey") {
-                newColors[row][col] = colorMap.get(colorIndex.toString());
+            if (newColors[row * size + col] === "grey") {
+                let currentColor = colorMap.get(colorIndex.toString());
+                if (currentColor) {
+                    newColors[row * size + col] = currentColor;
+                }
                 currentCount++;
             }
         }
@@ -179,15 +178,15 @@ function createGameMap(size: number) {
 /**
  * scrambles game map plus adds random numbers out of range;
  */
-function encodeGamePlan(plan: string[][]) {
+function encodeGamePlan(plan: string[]) {
     let code = "";
+    const size = Math.sqrt(plan.length);
     for (let i = 0; i < plan.length; i++) {
-        for (let j = 0; j < plan[i].length; j++) {
-            while (Math.random() > 0.3) {
-                code += Math.floor(Math.random() * 5 + 5);
-            }
-            code += textToColorCode(plan[j][i]);
+        while (Math.random() > 0.3) {
+            code += Math.floor(Math.random() * 5 + 5);
         }
+        const [row, col] = to2d(i, size);
+        code += textToColorCode(plan[col*size+ row]);
     }
     return code;
 }
@@ -237,15 +236,15 @@ function to2d(i: number, size: number): [number, number] {
 /**
  * fills tiles with values from previous variables
  */
-function handleGameplan(inGameplan: string, inWords: string, outColors: string[][], colorsVisibilities: boolean[], outWords: string[]) {
-    let size = outColors.length;
+function handleGameplan(inGameplan: string, inWords: string, outColors: string[], colorsVisibilities: boolean[], outWords: string[]) {
+    let size = Math.sqrt(outColors.length);
 
     if (inGameplan !== null) {
         colorsVisibilities.fill(true);
-        let decodedPlan = decodeGamePlan(inGameplan, outColors.length);
+        let decodedPlan = decodeGamePlan(inGameplan, size);
         for (let row = 0; row < size; row++) {
             for (let col = 0; col < size; col++) {
-                outColors[row][col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
+                outColors[row * size + col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
             }
         }
     }
@@ -296,12 +295,12 @@ let App = ({ size = 5, }) => {
             return;
         }
         setColorVisibility(Array(size * size).fill(false));
-        let newColors = create2dArray(size, size);
+        let newColors = create1dArray(size, size);
 
         let decodedPlan = decodeGamePlan(value, size);
         for (let row = 0; row < size; row++) {
             for (let col = 0; col < size; col++) {
-                newColors[row][col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
+                newColors[row * size + col] = colorMap.get(decodedPlan[row * size + col]) || "grey";
             }
         }
 
