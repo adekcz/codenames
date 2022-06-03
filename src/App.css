@@ -3,6 +3,20 @@ body {
     margin: 20px;
 }
 
+.score{
+    font-size: 30px;
+    padding-left: 20%;
+    font-weight: bold;
+}
+
+.redScore {
+    color: red;
+}
+
+.blueScore {
+    color: blue;
+}
+
 .rowFlex {
     display: flex;
     flex-direction: row;

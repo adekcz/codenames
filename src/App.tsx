@@ -277,6 +277,27 @@ function flipColor(color: string) {
     }
 }
 
+function countRed(colors: string[], visibilities: boolean[]) {
+    return countColors(colors, visibilities, "red", "lightred");
+}
+
+function countBlue(colors: string[], visibilities: boolean[]) {
+    return countColors(colors, visibilities, "blue", "lightblue");
+}
+
+function countColors(colors: string[], visibilities: boolean[], ...toMatch: string[]) {
+    let visibleCount = 0;
+    for (let i = 0; i < colors.length; i++) {
+        if (visibilities[i]) {
+            for (let color of toMatch) {
+                if (color === colors[i])
+                    visibleCount++;
+                break;
+            }
+        }
+    }
+    return visibleCount;
+}
 let App = ({ size = 5, }) => {
     let tempColors = createGameMap(size);
     let tempColorVisibilities = Array(size * size).fill(false);
@@ -286,7 +307,7 @@ let App = ({ size = 5, }) => {
     handleGameplan(gameplan, wordsInUrl, tempColors, tempColorVisibilities, tempWords);
 
     let [words, setWords] = useState(tempWords);
-    let [colorVisibilities, setColorVisibility] = useState(tempColorVisibilities);
+    let [colorVisibilities, setColorVisibility] = useState<boolean[]>(tempColorVisibilities);
     let [currentColors, setCurrentColors] = useState(tempColors);
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
@@ -341,14 +362,33 @@ let App = ({ size = 5, }) => {
     return (
         <sizeContext.Provider value={size}>
             <div>
-                <h1>Ugly codenames</h1>
                 <div className='rowFlex'>
-                    <Board
-                        words={words}
-                        currentColors={currentColors}
-                        colorVisibilities={colorVisibilities}
-                        changeColor={changeColor}
-                    />
+                    <div>
+                        <div className='rowFlex'>
+
+                            <h1>
+                                Ugly codenames
+                            </h1>
+                            <div className="score">
+                                <span> score </span>
+                                <span className="redScore">
+                                    {countRed(currentColors, colorVisibilities)}
+                                </span>
+                                <span> : </span>
+                                <span className="blueScore">
+                                    {countBlue(currentColors, colorVisibilities)}
+                                </span>
+
+                            </div>
+
+                        </div>
+                        <Board
+                            words={words}
+                            currentColors={currentColors}
+                            colorVisibilities={colorVisibilities}
+                            changeColor={changeColor}
+                        />
+                    </div>
                     <div className='columnFlex'>
                         <div>
                             <h2>Main controls</h2>
