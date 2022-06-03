@@ -19,8 +19,20 @@ body {
     background: crimson;
 }
 
+.tile.lightred {
+    background: rgb(223, 138, 155);
+    text-decoration: line-through;
+    text-decoration-thickness: 4px;
+}
+
 .tile.blue {
     background: dodgerblue;
+}
+
+.tile.lightblue {
+    background: rgb(168, 212, 255);
+    text-decoration: line-through;
+    text-decoration-thickness: 4px;
 }
 
 .tile.dark {
@@ -34,7 +46,13 @@ body {
 }
 
 .tile.grey {
+    background: grey;
+}
+
+.tile.lightgrey {
     background: lightgrey;
+    text-decoration: line-through;
+    text-decoration-thickness: 4px;
 }
 
 .columnFlex {

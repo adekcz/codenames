@@ -124,7 +124,7 @@ test('entering gameplan via input', async () => {
     expect(tile).toHaveClass("tile red", { exact: true });
 })
 
-test('using URL parameter', async () => {
+test('using URL parameter gameplane', async () => {
     changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910" });
     const { user } = setup(<App />)
     let tiles = screen.getAllByTestId("test-tile");
@@ -137,6 +137,29 @@ test('using URL parameter', async () => {
     expect(tiles[3]).toHaveClass("tile dark", { exact: true });
     expect(tiles[5]).toHaveClass("tile grey", { exact: true });
 });
+
+
+test('codemasters can manually highlight already selected tiles', async () => {
+    changeJSDOMURL({ gameplan: "8083011601381313707308281061360073910" });
+    const { user } = setup(<App />)
+    let tiles = screen.getAllByTestId("test-tile");
+    
+    expect(tiles[0]).toHaveClass("tile red", { exact: true });
+    await user.click(tiles[0]);
+    expect(tiles[0]).toHaveClass("tile lightred", { exact: true });
+
+    expect(tiles[0]).toHaveClass("tile red", { exact: true });
+    await user.click(tiles[1]);
+    expect(tiles[1]).toHaveClass("tile lightblue", { exact: true });    
+    await user.click(tiles[1]);
+    expect(tiles[1]).toHaveClass("tile blue", { exact: true });
+    
+    await user.click(tiles[3]);
+    await user.click(tiles[5]);
+    expect(tiles[3]).toHaveClass("tile dark", { exact: true });
+    expect(tiles[5]).toHaveClass("tile grey", { exact: true });
+});
+
 
 function filter(code: string | null) {
     if (code === null) return "";

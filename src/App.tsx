@@ -186,7 +186,7 @@ function encodeGamePlan(plan: string[]) {
             code += Math.floor(Math.random() * 5 + 5);
         }
         const [row, col] = to2d(i, size);
-        code += textToColorCode(plan[col*size+ row]);
+        code += textToColorCode(plan[col * size + row]);
     }
     return code;
 }
@@ -258,6 +258,25 @@ function handleGameplan(inGameplan: string, inWords: string, outColors: string[]
     }
 }
 
+function flipColor(color: string) {
+    switch (color) {
+        case "red":
+            return "lightred";
+        case "lightred":
+            return "red";
+        case "blue":
+            return "lightblue";
+        case "lightblue":
+            return "blue";
+        case "grey":
+            return "lightgrey";
+        case "lightgrey":
+            return "grey";
+        default:
+            return color;
+    }
+}
+
 let App = ({ size = 5, }) => {
     let tempColors = createGameMap(size);
     let tempColorVisibilities = Array(size * size).fill(false);
@@ -272,7 +291,13 @@ let App = ({ size = 5, }) => {
     let [labelForSetGameMapInput, setLabelForSetGameMapInput] = useState("enter new gamemap");
 
     function changeColor(x: number, y: number, size: number) {
+        if (colorVisibilities[x * size + y]) {
+            let colorsCopy = [...currentColors];
+            colorsCopy[x * size + y] = flipColor(colorsCopy[x * size + y]);
+            setCurrentColors(colorsCopy);
+        }
         let copy = [...colorVisibilities];
+
         copy[x * size + y] = true;
         setColorVisibility(copy);
     }
