@@ -290,9 +290,10 @@ function countColors(colors: string[], visibilities: boolean[], ...toMatch: stri
     for (let i = 0; i < colors.length; i++) {
         if (visibilities[i]) {
             for (let color of toMatch) {
-                if (color === colors[i])
+                if (color === colors[i]) {
                     visibleCount++;
-                break;
+                    break;
+                }
             }
         }
     }
