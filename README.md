@@ -11,7 +11,7 @@ Minimalistic implementation of codenames. You can write your own words and enjoy
 4. red team always starts
 5. more detailed instructions at the bottom of the screen
 
-hosted: http://michalkeda.com/uglycodenames
+hosted: https://michalkeda.com/uglycodenames
 
 
 
